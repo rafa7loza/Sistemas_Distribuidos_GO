@@ -14,9 +14,17 @@ import(
 
 func main() {
   var opt int
+  var username string
+
+  /* Create and init channel */
   ch := make(chan string, 1)
   ch <- ""
   go sendData(ch)
+
+  /* Register username in server */
+  fmt.Print("Enter your username: ")
+  fmt.Scanf("%s", &username)
+  labs.RegisterUser(username)
 
   for {
     fmt.Print("Get opt: ")
@@ -41,12 +49,12 @@ func sendData(inputData chan string) {
         conn, err := net.Dial("tcp", labs.PortString)
         if err != nil { log.Fatal(err) }
 
+        /* Get data from the channel */
         data, ok := <- inputData
-
         if !ok { break }
 
         /* Write message to the server */
-        msg := labs.NewMessage(os.Getpid(), data)
+        msg := labs.NewMessage(0, os.Getpid(), data)
         err = gob.NewEncoder(conn).Encode(msg)
 
         if err != nil { log.Println(err) }
