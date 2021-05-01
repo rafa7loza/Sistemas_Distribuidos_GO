@@ -13,12 +13,14 @@ import (
 type Client struct {
   username string
   SendChan chan string
+  Dest int
 }
 
 type client interface {
   GetUser() string
   RegisterUser()
   GetUsers() (map[int]string, error)
+  SetDest(dst int)
 }
 
 
@@ -27,7 +29,7 @@ func NewClient(name string) * Client {
   /* Create and init channel */
   ch := make(chan string, 1)
   ch <- ""
-  return  &Client{name, ch}
+  return  &Client{name, ch, -1}
 
 }
 
@@ -59,7 +61,11 @@ func (c * Client) SendMessages() {
         if !ok { break }
 
         /* Write message to the server */
-        msg := NewMessage(0, os.Getpid(), -1, data)
+        msg := NewMessage(
+          SENDMESSAGE_CODE,
+          os.Getpid(),
+          c.Dest,
+          data)
         err = gob.NewEncoder(conn).Encode(msg)
 
         if err != nil { log.Println(err) }
@@ -95,4 +101,8 @@ func (c * Client) GetUsers() (map[int]string, error) {
   if err != nil { return nil, err }
 
   return users, nil
+}
+
+func (c * Client) SetDest(dst int) {
+  c.Dest = dst
 }

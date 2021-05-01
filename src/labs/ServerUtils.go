@@ -38,7 +38,6 @@ func (s * Server) Run() {
     conn, err := s.ln.Accept()
     if err != nil { log.Println(err, "ln.Accept()") }
     go s.HandleClient(conn)
-    log.Println(s.Users)
   }
 }
 
