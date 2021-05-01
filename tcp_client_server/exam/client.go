@@ -2,13 +2,10 @@ package main
 
 import(
   "fmt"
-  "net"
   "os"
   "bufio"
   "labs"
-  "time"
   "log"
-  "encoding/gob"
   "strings"
 )
 
@@ -16,16 +13,15 @@ func main() {
   var opt rune
   var username string
 
-  /* Create and init channel */
-  ch := make(chan string, 1)
-  ch <- ""
-  go sendData(ch)
-
   /* Register username in server */
   fmt.Print("Enter your username: ")
   fmt.Scanf("%s", &username)
   client := labs.NewClient(username)
   client.RegisterUser()
+
+  /* The client starts listening to its channel
+   * waiting for messages to send */
+  go client.SendMessages()
 
   for ; opt!= 'x'; {
     mainMenu()
@@ -33,7 +29,7 @@ func main() {
 
     switch opt {
     case 'a':
-      ch <- getData()
+      client.SendChan <- getData()
     case 'x':
       break
     default:
@@ -43,34 +39,6 @@ func main() {
   }
 
   log.Println("Client disconnected")
-}
-
-func sendData(inputData chan string) {
-
-  for {
-    select {
-    case <-inputData:
-      for {
-        conn, err := net.Dial("tcp", labs.PortString)
-        if err != nil { log.Fatal(err) }
-
-        /* Get data from the channel */
-        data, ok := <- inputData
-        if !ok { break }
-
-        /* Write message to the server */
-        msg := labs.NewMessage(0, os.Getpid(), data)
-        err = gob.NewEncoder(conn).Encode(msg)
-
-        if err != nil { log.Println(err) }
-        conn.Close()
-        time.Sleep(time.Millisecond * labs.WAIT_TIME_MS)
-      }
-
-    default:
-      time.Sleep(time.Millisecond * labs.WAIT_TIME_MS)
-    }
-  }
 }
 
 func getData() string {
