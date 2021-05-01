@@ -28,6 +28,9 @@ func main() {
    * waiting for messages to send */
   go client.SendMessages()
 
+  /*  */
+  go client.StartListening()
+
   for ; opt!= 'x'; {
     mainMenu()
     fmt.Scanf("%c\n", &opt)

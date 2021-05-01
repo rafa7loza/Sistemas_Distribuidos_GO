@@ -1,6 +1,7 @@
 package labs
 
 import (
+  "io"
   "os"
   "net"
   "log"
@@ -23,8 +24,26 @@ type client interface {
   RegisterUser()
   GetUsers() (map[int]string, error)
   SetDest(dst int)
+  StartListening() error
 }
 
+/* Internal functions */
+func badCode() error {
+  return errors.New("Invalid code")
+}
+
+func appendToFile(filename string, msg []byte) error {
+  fd, err := os.OpenFile(
+    filename,
+    os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+    0644)
+
+  if err != nil { return nil }
+
+  defer fd.Close()
+  if _, err := fd.Write(msg); err != nil { return err }
+  return nil
+}
 
 /* External functions */
 func NewClient(name string) * Client {
@@ -95,7 +114,7 @@ func (c * Client) GetUsers() (map[int]string, error) {
   /* Listen for reply */
   err = gob.NewDecoder(conn).Decode(&msg)
   if err != nil { return nil, err }
-  if msg.Code != GETUSERS_CODE { return nil, errors.New("Invalid code") }
+  if msg.Code != GETUSERS_CODE { return nil, badCode() }
 
   /* Return a map of users */
   var users map[int]string
@@ -124,6 +143,47 @@ func (c * Client) CreateDir() error {
   return nil
 }
 
-func (c * Client) StartListening() {
+func (c * Client) StartListening()  {
+  for {
+    /* Init connection */
+    conn, err := net.Dial(PROTOCOL, ADDRESS)
+    if err != nil { log.Fatal(err) }
 
+    /* Encode and send message */
+    msg := NewMessage(CHECKMSG_CODE, os.Getpid(), -1, "")
+    err = gob.NewEncoder(conn).Encode(msg)
+    if err != nil {
+      log.Println(err)
+      continue
+    }
+
+    c.saveMessage(conn)
+
+    conn.Close()
+    time.Sleep(time.Millisecond * WAIT_TIME_MS)
+  }
+}
+
+/* Private methods */
+func (c * Client) saveMessage(conn net.Conn) {
+  var msg Message
+
+  // TODO: Refactor this code into a function in order to
+  // avoid code repetition
+  err := gob.NewDecoder(conn).Decode(&msg)
+  if err != nil {
+    if err != io.EOF { log.Println(err) }
+    return
+  }
+
+  if msg.Code != RECMESSAGE_CODE {
+    log.Println(badCode())
+    return
+  }
+
+  /* Append the message to the file */
+  filename := c.Folder + "/" + c.username + ".msg"
+  if err := appendToFile(filename, msg.Data); err != nil {
+    log.Println(err)
+  }
 }
