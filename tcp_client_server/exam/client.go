@@ -13,7 +13,7 @@ import(
 )
 
 func main() {
-  var opt int
+  var opt rune
   var username string
 
   /* Create and init channel */
@@ -24,17 +24,22 @@ func main() {
   /* Register username in server */
   fmt.Print("Enter your username: ")
   fmt.Scanf("%s", &username)
-  labs.RegisterUser(username)
+  client := labs.NewClient(username)
+  client.RegisterUser()
 
-  for {
-    fmt.Print("Get opt: ")
-    fmt.Scanf("%d\n", &opt)
+  for ; opt!= 'x'; {
+    mainMenu()
+    fmt.Scanf("%c\n", &opt)
 
-    if opt == -1 {
+    switch opt {
+    case 'a':
+      ch <- getData()
+    case 'x':
       break
+    default:
+      log.Println("Invalid option")
     }
 
-    ch <- getData()
   }
 
   log.Println("Client disconnected")
@@ -78,4 +83,12 @@ func getData() string {
   data = strings.Replace(data, "\n", "", -1)
   log.Println("data", data)
   return data
+}
+
+func mainMenu() {
+  fmt.Println("a) Send message")
+  fmt.Println("b) Send file")
+  fmt.Println("c) Show messages received")
+  fmt.Println("x) Exit\n")
+  fmt.Print("Enter an option: ")
 }

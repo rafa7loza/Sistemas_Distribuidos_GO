@@ -7,14 +7,29 @@ import (
   "encoding/gob"
 )
 
+type Client struct {
+  username string
+}
+
+type client interface {
+  GetUser() string
+  RegisterUser()
+}
+
+
 /* External functions */
-func RegisterUser(username string) {
+func NewClient(name string) * Client {
+  return &Client{name}
+}
+
+/* Client methods */
+func (c * Client) RegisterUser() {
   /* Init connection */
   conn, err := net.Dial(PROTOCOL, PortString)
   if err != nil { log.Fatal(err) }
 
   /* Encode and send message */
-  msg := NewMessage(REGISTER_CODE, os.Getpid(), username)
+  msg := NewMessage(REGISTER_CODE, os.Getpid(), c.username)
   err = gob.NewEncoder(conn).Encode(msg)
 
   /* Close connection */
