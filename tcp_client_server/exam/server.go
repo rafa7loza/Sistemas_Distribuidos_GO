@@ -3,23 +3,25 @@ package main
 import (
   "fmt"
   "log"
-  "net"
   "labs"
-  "encoding/gob"
 )
 
-var pids map[int]bool
+var users map[int]string
 
 func main() {
   log.Println("Starting server...")
-  go initServer()
+  var srvr labs.Server
+
+  go srvr.Init()
 
   var input string
   fmt.Scanln(&input)
   log.Println("Server stopped")
 }
 
+/*
 func initServer() {
+  users = make(map[int]string)
   ln, err := net.Listen("tcp", labs.PortString)
   defer ln.Close()
 
@@ -29,24 +31,11 @@ func initServer() {
   }
 
   for {
-    /* accept connection on port */
+
     conn, err := ln.Accept()
     if err != nil { log.Println(err, "ln.Accept()") }
-    go handleClient(conn)
+    go labs.HandleClient(conn, users)
+    fmt.Println(users)
   }
-
 }
-
-func handleClient(conn net.Conn) {
-  var msg labs.Message
-
-  err := gob.NewDecoder(conn).Decode(&msg)
-
-  if err != nil {
-    log.Println(err)
-    return
-  }
-
-  fmt.Println("Message=", msg)
-  conn.Close()
-}
+*/
