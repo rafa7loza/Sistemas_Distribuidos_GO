@@ -29,6 +29,12 @@ func main() {
 
     switch opt {
     case 'a':
+      users, err := client.GetUsers()
+      if err != nil {
+        log.Println(err)
+        continue
+      }
+      log.Println(users)
       client.SendChan <- getData()
     case 'x':
       break
