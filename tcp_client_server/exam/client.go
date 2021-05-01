@@ -19,6 +19,11 @@ func main() {
   client := labs.NewClient(username)
   client.RegisterUser()
 
+  /* Create user folder to store logs, messages and
+   * files */
+   err := client.CreateDir()
+   if err != nil { log.Fatal(err) }
+
   /* The client starts listening to its channel
    * waiting for messages to send */
   go client.SendMessages()

@@ -4,6 +4,7 @@ import (
   "os"
   "net"
   "log"
+  "fmt"
   "encoding/gob"
   "encoding/json"
   "time"
@@ -14,6 +15,7 @@ type Client struct {
   username string
   SendChan chan string
   Dest int
+  Folder string
 }
 
 type client interface {
@@ -29,7 +31,7 @@ func NewClient(name string) * Client {
   /* Create and init channel */
   ch := make(chan string, 1)
   ch <- ""
-  return  &Client{name, ch, -1}
+  return  &Client{name, ch, -1, ""}
 
 }
 
@@ -105,4 +107,23 @@ func (c * Client) GetUsers() (map[int]string, error) {
 
 func (c * Client) SetDest(dst int) {
   c.Dest = dst
+}
+
+func (c * Client) CreateDir() error {
+  path, err := os.Getwd()
+  if err != nil { return err }
+
+  folder := fmt.Sprintf("%s_%d", c.username, os.Getpid())
+  path += "/clients/" + folder
+
+  err = os.MkdirAll(path, 0777)
+  if err != nil { return err }
+
+  /* Set the path atributte */
+  c.Folder = path
+  return nil
+}
+
+func (c * Client) StartListening() {
+
 }
