@@ -40,9 +40,11 @@ func HandleClient(conn net.Conn, users map[int]string) {
 }
 */
 
+
+/* Server methods */
 func (s * Server) Init() {
   s.users = make(map[int]string)
-  ln, err := net.Listen(PROTOCOL, PortString)
+  ln, err := net.Listen(PROTOCOL, ADDRESS)
   s.ln = ln
   defer s.ln.Close()
 
@@ -76,7 +78,7 @@ func (s * Server) HandleClient(conn net.Conn) {
 
   switch msg.Code {
   case REGISTER_CODE:
-    s.users[msg.Id] = msg.Data
+    s.users[msg.Id] = string(msg.Data)
     log.Println("User registered")
   default:
     log.Println("Message=", msg)

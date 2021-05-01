@@ -1,19 +1,26 @@
 package labs
 
 const (
-  PortString = ":1234"
+  ADDRESS = ":1234"
   PROTOCOL = "tcp"
   REGISTER_CODE = 1
+  GETUSERS_CODE = 2
   WAIT_TIME_MS = 500
 )
 
 type Message struct {
   Code, Id, Dest int
-  Data string
+  Data []byte
 }
 
-/* External function */
-
-func NewMessage(code int, pid int, data string) * Message {
-  return &Message{code, pid, -1, data}
+/* External functions */
+func NewMessage(code int, pid int, data interface{}) * Message {
+  switch t := data.(type) {
+  case string:
+    return &Message{code, pid, -1, []byte(t)}
+  case []byte:
+    return &Message{code, pid, -1, t}
+  default:
+    return nil
+  }
 }

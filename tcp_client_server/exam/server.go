@@ -18,24 +18,3 @@ func main() {
   fmt.Scanln(&input)
   log.Println("Server stopped")
 }
-
-/*
-func initServer() {
-  users = make(map[int]string)
-  ln, err := net.Listen("tcp", labs.PortString)
-  defer ln.Close()
-
-  if err != nil {
-    log.Println(err, "initServer")
-    return
-  }
-
-  for {
-
-    conn, err := ln.Accept()
-    if err != nil { log.Println(err, "ln.Accept()") }
-    go labs.HandleClient(conn, users)
-    fmt.Println(users)
-  }
-}
-*/
