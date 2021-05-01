@@ -1,0 +1,73 @@
+package main
+
+import(
+  "fmt"
+  "net"
+  "os"
+  "bufio"
+  "labs"
+  "time"
+  "log"
+  "encoding/gob"
+  "strings"
+)
+
+func main() {
+  var opt int
+  ch := make(chan string, 1)
+  ch <- ""
+  go sendData(ch)
+
+  for {
+    fmt.Print("Get opt: ")
+    fmt.Scanf("%d\n", &opt)
+
+    if opt == -1 {
+      break
+    }
+
+    ch <- getData()
+  }
+
+  log.Println("Client disconnected")
+}
+
+func sendData(inputData chan string) {
+
+  for {
+    select {
+    case <-inputData:
+      for {
+        conn, err := net.Dial("tcp", labs.PortString)
+        if err != nil { log.Fatal(err) }
+
+        data, ok := <- inputData
+
+        if !ok { break }
+
+        /* Write message to the server */
+        msg := labs.NewMessage(os.Getpid(), data)
+        err = gob.NewEncoder(conn).Encode(msg)
+
+        if err != nil { log.Println(err) }
+        conn.Close()
+        time.Sleep(time.Millisecond * labs.WAIT_TIME_MS)
+      }
+
+    default:
+      time.Sleep(time.Millisecond * labs.WAIT_TIME_MS)
+    }
+  }
+}
+
+func getData() string {
+  reader := bufio.NewReader(os.Stdin)
+
+  data, err := reader.ReadString('\n')
+  if err != nil {
+    return "(NULL)"
+  }
+  data = strings.Replace(data, "\n", "", -1)
+  log.Println("data", data)
+  return data
+}
