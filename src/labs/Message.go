@@ -19,7 +19,7 @@ type Message struct {
 }
 
 /* External functions */
-func NewMessage(code int, pid int, data interface{}) * Message {
+func NewMessage(code int, pid int, dst int, data interface{}) * Message {
   switch t := data.(type) {
   case string:
     return &Message{code, pid, -1, []byte(t)}

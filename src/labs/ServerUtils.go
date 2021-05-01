@@ -57,7 +57,7 @@ func (s * Server) HandleClient(conn net.Conn) {
     s.Users[msg.Id] = string(msg.Data)
     log.Println("User registered")
   case GETUSERS_CODE: // Send the map of users
-    msg = *NewMessage(GETUSERS_CODE, -1, s.Users)
+    msg = *NewMessage(GETUSERS_CODE, -1, -1, s.Users)
     err = gob.NewEncoder(conn).Encode(msg)
     if err != nil {
       log.Println(err)

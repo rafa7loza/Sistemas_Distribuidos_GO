@@ -38,7 +38,7 @@ func (c * Client) RegisterUser() {
   if err != nil { log.Fatal(err) }
 
   /* Encode and send message */
-  msg := NewMessage(REGISTER_CODE, os.Getpid(), c.username)
+  msg := NewMessage(REGISTER_CODE, os.Getpid(), -1, c.username)
   err = gob.NewEncoder(conn).Encode(msg)
   if err != nil { log.Println(err) }
 
@@ -59,7 +59,7 @@ func (c * Client) SendMessages() {
         if !ok { break }
 
         /* Write message to the server */
-        msg := NewMessage(0, os.Getpid(), data)
+        msg := NewMessage(0, os.Getpid(), -1, data)
         err = gob.NewEncoder(conn).Encode(msg)
 
         if err != nil { log.Println(err) }
@@ -80,7 +80,7 @@ func (c * Client) GetUsers() (map[int]string, error) {
   defer conn.Close()
 
   /* Encode and send message */
-  msg := NewMessage(GETUSERS_CODE, os.Getpid(), "")
+  msg := NewMessage(GETUSERS_CODE, os.Getpid(), -1, "")
   err = gob.NewEncoder(conn).Encode(msg)
   if err != nil { return nil, err }
 
