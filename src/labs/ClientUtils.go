@@ -90,7 +90,6 @@ func (c * Client) GetUsers() (map[int]string, error) {
   if msg.Code != GETUSERS_CODE { return nil, errors.New("Invalid code") }
 
   /* Return a map of users */
-  // TODO: Convert the slice of bytes into a map
   var users map[int]string
   err = json.Unmarshal(msg.Data, &users)
   if err != nil { return nil, err }

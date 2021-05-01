@@ -1,5 +1,10 @@
 package labs
 
+import (
+  "encoding/json"
+  "log"
+)
+
 const (
   ADDRESS = ":1234"
   PROTOCOL = "tcp"
@@ -20,6 +25,13 @@ func NewMessage(code int, pid int, data interface{}) * Message {
     return &Message{code, pid, -1, []byte(t)}
   case []byte:
     return &Message{code, pid, -1, t}
+  case map[int]string:
+    b, err := json.Marshal(t)
+    if err != nil {
+      log.Println(err)
+      return nil
+    }
+    return &Message{code, pid, -1, b}
   default:
     return nil
   }
