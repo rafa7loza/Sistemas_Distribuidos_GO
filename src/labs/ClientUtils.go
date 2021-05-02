@@ -39,6 +39,7 @@ func appendToFile(filename string, msg []byte) error {
     0644)
 
   if err != nil { return nil }
+  defer fd.Close()
 
   defer fd.Close()
   if _, err := fd.Write(msg); err != nil { return err }
@@ -162,6 +163,68 @@ func (c * Client) StartListening()  {
     conn.Close()
     time.Sleep(time.Millisecond * WAIT_TIME_MS)
   }
+}
+
+func (c * Client) SendFile(name string) error {
+  path := c.Folder + "/" + name
+
+  /* Open the file read-only mode */
+  fd, err := os.Open(path)
+  if err != nil { return err }
+
+  /* Get the size of the file  and rezise the byte slice */
+  st, err := fd.Stat()
+  if err != nil { return err }
+  data := make([]byte, st.Size())
+
+  /* Fill the slice with the file's content */
+  _, err = fd.Read(data)
+  if err != nil { return err }
+
+  /* Connect to the server */
+  conn, err := net.Dial(PROTOCOL, ADDRESS)
+  if err != nil { return err }
+  defer conn.Close()
+
+  /* Write message to the server */
+  msg := NewMessage(
+    SENDFILE_CODE,
+    os.Getpid(),
+    c.Dest,
+    data)
+  err = gob.NewEncoder(conn).Encode(msg)
+  if err != nil { return err }
+
+  /* No error */
+  return nil
+}
+
+func (c * Client) GetFiles() ([]string, error) {
+  ret := make([]string, 0)
+
+  files, err := os.ReadDir(c.Folder)
+  if err != nil { return nil, err }
+
+  for _, file := range files {
+    ret = append(ret, file)
+  }
+
+  return ret, nil
+}
+
+func (c * Client) SaveFile(name string, content []byte) error {
+  filename := c.Folder + "/" + name
+
+  fd, err := os.OpenFile(
+    filename,
+    os.O_CREATE|os.O_WRONLY,
+    0644)
+
+  if err != nil { return nil }
+  defer fd.Close()
+
+  _, err = fd.Write(content)
+  return err
 }
 
 /* Private methods */

@@ -35,8 +35,7 @@ func main() {
     mainMenu()
     fmt.Scanf("%c\n", &opt)
 
-    switch opt {
-    case 'a':
+    if opt == 'a' || opt == 'b' {
       users, err := client.GetUsers()
       if err != nil {
         log.Println(err)
@@ -48,19 +47,46 @@ func main() {
       if dst == -1 { continue }
 
       client.SetDest(dst)
-      client.SendChan <- getData(users[dst])
-    case 'x':
-      break
-    default:
+      if opt == 'a' {
+        client.SendChan <- readLine(users[dst])
+      } else {
+        files, err := client.GetFiles()
+        if err != nil {
+          log.Println(err)
+          continue
+        } else if len(files) {
+          log.Println("No Files available")
+          continue
+        }
+
+        for i, file := range files {
+          fmt.Println(i, "->", file)
+        }
+
+        var index int
+        fmt.Print("Choose the index of the file you want to send")
+        fmt.Scanf("%d", &index)
+
+        if index < 0 && index >= len(files) {
+          log.Println("Error: Invalid index")
+          continue
+        }
+
+        err = client.SendFile(files[index])
+        if err != nil { log.Println(err) }
+      }
+    } else if opt == 'x' {
+      // TODO: Disconnect
+      log.Println("Disconnecting...")
+    } else {
       log.Println("Invalid option")
     }
-
   }
 
   log.Println("Client disconnected")
 }
 
-func getData(dst string) string {
+func readLine(dst string) string {
   reader := bufio.NewReader(os.Stdin)
 
   fmt.Printf(
