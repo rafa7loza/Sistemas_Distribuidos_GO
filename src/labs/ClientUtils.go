@@ -158,7 +158,19 @@ func (c * Client) StartListening()  {
       continue
     }
 
-    c.saveMessage(conn)
+    // TODO: Refactor this code into a function in order to
+    // avoid code repetition
+    err = gob.NewDecoder(conn).Decode(&msg)
+    if err != nil {
+      if err != io.EOF { log.Println(err) }
+    }
+
+    switch msg.Code {
+    case RECMESSAGE_CODE:
+      c.saveMessage(msg.Data)
+    case RECFILE_CODE:
+      c.saveFile(msg.Data)
+    }
 
     conn.Close()
     time.Sleep(time.Millisecond * WAIT_TIME_MS)
@@ -206,47 +218,33 @@ func (c * Client) GetFiles() ([]string, error) {
   if err != nil { return nil, err }
 
   for _, file := range files {
-    ret = append(ret, file)
+    ret = append(ret, file.Name())
   }
 
   return ret, nil
 }
 
-func (c * Client) SaveFile(name string, content []byte) error {
-  filename := c.Folder + "/" + name
+/* Private methods */
+func (c * Client) saveMessage(data []byte) {
+  /* Append the message to the file */
+  filename := c.Folder + "/" + c.username + ".msg"
+  if err := appendToFile(filename, data); err != nil {
+    log.Println(err)
+  }
+}
 
+func (c * Client) saveFile(data []byte) {
+  name := "tmpName"
+  filename := c.Folder + "/" + name
   fd, err := os.OpenFile(
     filename,
     os.O_CREATE|os.O_WRONLY,
     0644)
 
-  if err != nil { return nil }
+  if err != nil { fmt.Println(err) }
   defer fd.Close()
 
-  _, err = fd.Write(content)
-  return err
-}
+  _, err = fd.Write(data)
+  if err != nil { fmt.Println(err) }
 
-/* Private methods */
-func (c * Client) saveMessage(conn net.Conn) {
-  var msg Message
-
-  // TODO: Refactor this code into a function in order to
-  // avoid code repetition
-  err := gob.NewDecoder(conn).Decode(&msg)
-  if err != nil {
-    if err != io.EOF { log.Println(err) }
-    return
-  }
-
-  if msg.Code != RECMESSAGE_CODE {
-    log.Println(badCode())
-    return
-  }
-
-  /* Append the message to the file */
-  filename := c.Folder + "/" + c.username + ".msg"
-  if err := appendToFile(filename, msg.Data); err != nil {
-    log.Println(err)
-  }
 }

@@ -82,9 +82,22 @@ func (s * Server) HandleClient(conn net.Conn) {
       s.Users[msg.Id],
       string(msg.Data))
 
-    /* Create a message with the and add it to the waiting list */
+    /* Create a message with the text and add it to the waiting list */
     msg = *NewMessage(RECMESSAGE_CODE, msg.Id, msg.Dest, []byte(text))
-    s.PendingMsg[msg.Id] = append(s.PendingMsg[msg.Id], msg)
+    s.PendingMsg[msg.Dest] = append(s.PendingMsg[msg.Dest], msg)
+
+    /* Return the message */
+    msg = *NewMessage(OK_CODE, -1, -1, []byte{})
+    gob.NewEncoder(conn).Encode(msg)
+
+  case SENDFILE_CODE:
+    /* Create a message with the text and add it to the waiting list */
+    msg = *NewMessage(RECFILE_CODE, msg.Id, msg.Dest, msg.Data)
+    s.PendingMsg[msg.Dest] = append(s.PendingMsg[msg.Dest], msg)
+
+    /* Return the message */
+    msg = *NewMessage(OK_CODE, -1, -1, []byte{})
+    gob.NewEncoder(conn).Encode(msg)
 
   case CHECKMSG_CODE: // Check if the client has pending messages to serve
     if _, ok := s.PendingMsg[msg.Id]; !ok { return }

@@ -54,7 +54,7 @@ func main() {
         if err != nil {
           log.Println(err)
           continue
-        } else if len(files) {
+        } else if len(files) == 0 {
           log.Println("No Files available")
           continue
         }
@@ -64,7 +64,7 @@ func main() {
         }
 
         var index int
-        fmt.Print("Choose the index of the file you want to send")
+        fmt.Print("Choose the index of the file you want to send: ")
         fmt.Scanf("%d", &index)
 
         if index < 0 && index >= len(files) {
@@ -124,7 +124,7 @@ func chooseUser(users map[int]string, self string) int {
     inverseMap[v] = k
   }
 
-  fmt.Print("Write the name of the user to send message: ")
+  fmt.Print("Write the name of the user: ")
   fmt.Scanf("%s", &user)
 
   /* Try to get the user's pid from the map */

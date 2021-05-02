@@ -15,6 +15,7 @@ const (
   CHECKMSG_CODE = 5
   SENDFILE_CODE = 6
   RECFILE_CODE = 7
+  OK_CODE = 8
   WAIT_TIME_MS = 500
 )
 
