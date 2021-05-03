@@ -6,15 +6,33 @@ import (
   "labs"
 )
 
-var users map[int]string
-
 func main() {
-  log.Println("Starting server...")
   var srvr labs.Server
+  var input rune
 
+  /* Start the server */
+  log.Println("Starting server...")
   go srvr.Init()
 
-  var input string
-  fmt.Scanln(&input)
+  for ; input != 'x'; {
+    menu()
+    fmt.Scanf("%c\n", &input)
+
+    switch input {
+    case 'a':
+      srvr.PrintLogs()
+    case 'x':
+      log.Println("Stopping the service")
+    default:
+      log.Println("Invalid option")
+    }
+  }
   log.Println("Server stopped")
+}
+
+func menu() {
+  fmt.Println("a) Show logs")
+  fmt.Println("b) Backup logs")
+  fmt.Println("x) Stop service")
+  fmt.Print("Choose an option: ")
 }

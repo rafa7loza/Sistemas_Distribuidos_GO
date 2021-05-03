@@ -6,19 +6,47 @@ import (
   "net"
   "fmt"
   "time"
+  "encoding/json"
   "encoding/gob"
+)
+
+const (
+  SENDFILE = 1
+  SENDMSG = 2
 )
 
 type Server struct {
   ln net.Listener
   Users map[int]string
   PendingMsg map[int][]Message
+  Logs []string
 }
 
 type server interface {
   Init()
   Run()
   HandleClient(conn net.Conn)
+}
+
+/* Internal functions */
+func formatLog(source, dest, extra string, action int) string {
+  var formatStr string
+  dt := time.Now()
+
+  if action == SENDFILE {
+    formatStr = "%s: %s sent the file '%s' to %s"
+  } else if action == SENDMSG {
+    formatStr = "%s: %s sent the message '%s' to %s"
+  } else {
+    return ""
+  }
+
+  return fmt.Sprintf(
+    formatStr,
+    dt.Format("01-02-2006 15:04:05"),
+    source,
+    extra,
+    dest)
 }
 
 /* Server methods */
@@ -49,6 +77,8 @@ func (s * Server) Run() {
 
 func (s * Server) HandleClient(conn net.Conn) {
   var msg Message
+  var file File
+
   defer conn.Close()
 
   // TODO: Refactor this code into a function in order to
@@ -68,7 +98,6 @@ func (s * Server) HandleClient(conn net.Conn) {
     err = gob.NewEncoder(conn).Encode(msg)
     if err != nil {
       if err != io.EOF { log.Println(err) }
-      log.Println(err)
       return
     }
 
@@ -81,6 +110,14 @@ func (s * Server) HandleClient(conn net.Conn) {
       s.Users[msg.Id],
       string(msg.Data))
 
+    /* Format and store the log */
+    log := formatLog(
+      s.Users[msg.Id],
+      s.Users[msg.Dest],
+      string(msg.Data),
+      SENDMSG)
+    s.Logs = append(s.Logs, log)
+
     /* Create a message with the text and add it to the waiting list */
     msg = *NewMessage(RECMESSAGE_CODE, msg.Id, msg.Dest, []byte(text))
     s.PendingMsg[msg.Dest] = append(s.PendingMsg[msg.Dest], msg)
@@ -90,6 +127,21 @@ func (s * Server) HandleClient(conn net.Conn) {
     gob.NewEncoder(conn).Encode(msg)
 
   case SENDFILE_CODE:
+    /* Decode the File struct */
+    err := json.Unmarshal(msg.Data, &file)
+    if err != nil {
+      log.Println(err)
+      return
+    }
+
+    /* Format and store the log */
+    log := formatLog(
+      s.Users[msg.Id],
+      s.Users[msg.Dest],
+      string(file.Name),
+      SENDFILE)
+    s.Logs = append(s.Logs, log)
+
     /* Create a message with the text and add it to the waiting list */
     msg = *NewMessage(RECFILE_CODE, msg.Id, msg.Dest, msg.Data)
     s.PendingMsg[msg.Dest] = append(s.PendingMsg[msg.Dest], msg)
@@ -114,5 +166,11 @@ func (s * Server) HandleClient(conn net.Conn) {
   default:
     log.Println("Message=", msg)
   }
+}
 
+func (s * Server) PrintLogs() {
+  for _,log := range s.Logs {
+    fmt.Println(log)
+  }
+  fmt.Println()
 }
