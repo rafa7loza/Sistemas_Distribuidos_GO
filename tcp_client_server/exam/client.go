@@ -74,6 +74,9 @@ func main() {
         err = client.SendFile(files[index])
         if err != nil { log.Println(err) }
       }
+
+    } else if opt == 'c' {
+      fmt.Println(client.GetLogs())
     } else if opt == 'x' {
       client.Disconnect()
       log.Println("Disconnecting...")
@@ -96,7 +99,6 @@ func readLine(dst string) string {
     return "(NULL)"
   }
   data = strings.Replace(data, "\n", "", -1)
-  log.Println("data", data)
   return data
 }
 

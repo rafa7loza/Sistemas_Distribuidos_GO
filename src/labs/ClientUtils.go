@@ -241,6 +241,17 @@ func (c * Client) Disconnect() {
   if err != nil { log.Println(err) }
 
 }
+
+func (c * Client) GetLogs() string {
+  filename := c.Folder + "/" + c.username + ".msg"
+  data, err := os.ReadFile(filename)
+  if err != nil {
+    log.Println(err)
+    return ""
+  }
+
+  return string(data)
+}
 /* Private methods */
 func (c * Client) saveMessage(data []byte) {
   /* Append the message to the file */
