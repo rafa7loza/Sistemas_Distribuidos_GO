@@ -204,7 +204,7 @@ func (c * Client) SendFile(name string) error {
     SENDFILE_CODE,
     os.Getpid(),
     c.Dest,
-    data)
+    File{name, data})
   err = gob.NewEncoder(conn).Encode(msg)
   if err != nil { return err }
 
@@ -250,18 +250,24 @@ func (c * Client) saveMessage(data []byte) {
   }
 }
 
-func (c * Client) saveFile(data []byte) {
-  name := "tmpName"
-  filename := c.Folder + "/" + name
+func (c * Client) saveFile(data []byte) error {
+  var file File
+
+  /* Decode the File struct */
+  err := json.Unmarshal(data, &file)
+  if err != nil { return err }
+
+  filename := c.Folder + "/" + file.Name
   fd, err := os.OpenFile(
     filename,
     os.O_CREATE|os.O_WRONLY,
     0644)
 
-  if err != nil { fmt.Println(err) }
+  if err != nil { return err }
   defer fd.Close()
 
-  _, err = fd.Write(data)
-  if err != nil { fmt.Println(err) }
+  _, err = fd.Write(file.Content)
+  if err != nil { return err }
 
+  return nil
 }

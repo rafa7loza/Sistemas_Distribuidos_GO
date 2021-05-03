@@ -62,7 +62,6 @@ func (s * Server) HandleClient(conn net.Conn) {
   switch msg.Code {
   case REGISTER_CODE: // Add user to the map
     s.Users[msg.Id] = string(msg.Data)
-    log.Println("User registered")
 
   case GETUSERS_CODE: // Send the map of users
     msg = *NewMessage(GETUSERS_CODE, -1, -1, s.Users)

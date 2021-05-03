@@ -39,6 +39,13 @@ func NewMessage(code int, pid int, dst int, data interface{}) * Message {
       return nil
     }
     return &Message{code, pid, dst, b}
+  case File:
+    b, err := json.Marshal(t)
+    if err != nil {
+      log.Println(err)
+      return nil
+    }
+    return &Message{code, pid, dst, b}
   default:
     return nil
   }
