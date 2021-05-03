@@ -32,20 +32,6 @@ func badCode() error {
   return errors.New("Invalid code")
 }
 
-func appendToFile(filename string, msg []byte) error {
-  fd, err := os.OpenFile(
-    filename,
-    os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-    0644)
-
-  if err != nil { return nil }
-  defer fd.Close()
-
-  defer fd.Close()
-  if _, err := fd.Write(msg); err != nil { return err }
-  return nil
-}
-
 /* External functions */
 func NewClient(name string) * Client {
   /* Create and init channel */
@@ -256,7 +242,7 @@ func (c * Client) GetLogs() string {
 func (c * Client) saveMessage(data []byte) {
   /* Append the message to the file */
   filename := c.Folder + "/" + c.username + ".msg"
-  if err := appendToFile(filename, data); err != nil {
+  if err := AppendToFile(filename, data); err != nil {
     log.Println(err)
   }
 }

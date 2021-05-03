@@ -2,6 +2,7 @@ package labs
 
 import (
   "io"
+  "os"
   "log"
   "net"
   "fmt"
@@ -13,6 +14,7 @@ import (
 const (
   SENDFILE = 1
   SENDMSG = 2
+  LOGS_FILE = "server.log"
 )
 
 type Server struct {
@@ -34,9 +36,9 @@ func formatLog(source, dest, extra string, action int) string {
   dt := time.Now()
 
   if action == SENDFILE {
-    formatStr = "%s: %s sent the file '%s' to %s"
+    formatStr = "%s: %s sent the file '%s' to %s\n"
   } else if action == SENDMSG {
-    formatStr = "%s: %s sent the message '%s' to %s"
+    formatStr = "%s: %s sent the message '%s' to %s\n"
   } else {
     return ""
   }
@@ -168,9 +170,25 @@ func (s * Server) HandleClient(conn net.Conn) {
   }
 }
 
-func (s * Server) PrintLogs() {
+func (s * Server) FlushLogs() {
   for _,log := range s.Logs {
-    fmt.Println(log)
+    AppendToFile(LOGS_FILE, []byte(log))
+  }
+
+  /* Clear the slice */
+  s.Logs = []string{}
+}
+
+func (s * Server) PrintLogs() {
+  /* First read the logs from the file*/
+  data, err := os.ReadFile(LOGS_FILE)
+  if err == nil {
+    fmt.Print(string(data))
+  }
+
+  /* Then print the logs from memory */
+  for _,log := range s.Logs {
+    fmt.Print(log)
   }
   fmt.Println()
 }

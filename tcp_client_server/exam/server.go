@@ -21,6 +21,9 @@ func main() {
     switch input {
     case 'a':
       srvr.PrintLogs()
+    case 'b':
+      srvr.FlushLogs()
+      log.Println("Logs stored in file")
     case 'x':
       log.Println("Stopping the service")
     default:
