@@ -41,7 +41,6 @@ func main() {
         log.Println(err)
         continue
       }
-      log.Println(users)
 
       dst := chooseUser(users, username)
       if dst == -1 { continue }
@@ -76,7 +75,7 @@ func main() {
         if err != nil { log.Println(err) }
       }
     } else if opt == 'x' {
-      // TODO: Disconnect
+      client.Disconnect()
       log.Println("Disconnecting...")
     } else {
       log.Println("Invalid option")

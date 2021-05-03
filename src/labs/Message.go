@@ -16,6 +16,7 @@ const (
   SENDFILE_CODE = 6
   RECFILE_CODE = 7
   OK_CODE = 8
+  DISCONNECT_CODE = 9
   WAIT_TIME_MS = 500
 )
 

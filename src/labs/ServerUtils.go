@@ -108,6 +108,10 @@ func (s * Server) HandleClient(conn net.Conn) {
       if err != nil { log.Println(err) }
     }
     delete(s.PendingMsg, msg.Id)
+
+  case DISCONNECT_CODE: // Remove user from the list of users
+    delete(s.Users, msg.Id)
+
   default:
     log.Println("Message=", msg)
   }

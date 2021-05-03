@@ -183,6 +183,7 @@ func (c * Client) SendFile(name string) error {
   /* Open the file read-only mode */
   fd, err := os.Open(path)
   if err != nil { return err }
+  defer fd.Close()
 
   /* Get the size of the file  and rezise the byte slice */
   st, err := fd.Stat()
@@ -224,6 +225,22 @@ func (c * Client) GetFiles() ([]string, error) {
   return ret, nil
 }
 
+func (c * Client) Disconnect() {
+  /* Connect to the server */
+  conn, err := net.Dial(PROTOCOL, ADDRESS)
+  if err != nil { log.Println(err) }
+  defer conn.Close()
+
+  /* Write message to the server */
+  msg := NewMessage(
+    DISCONNECT_CODE,
+    os.Getpid(),
+    -1,
+    []byte{})
+  err = gob.NewEncoder(conn).Encode(msg)
+  if err != nil { log.Println(err) }
+
+}
 /* Private methods */
 func (c * Client) saveMessage(data []byte) {
   /* Append the message to the file */
