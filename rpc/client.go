@@ -27,7 +27,7 @@ func main() {
       grade := readGrade()
       err = conn.Call(rpclab.MADD_ONE, grade, &dummy)
       if err != nil {
-        log.Println(rpclab.MADD_ONE, err)
+        fmt.Println(rpclab.MADD_ONE, err)
         continue
       }
       fmt.Println("Calificacion agregada exitosamente!\n")
@@ -65,6 +65,7 @@ func main() {
       fmt.Printf("El promedio de %s es %.2f\n", val, avg)
 
     case "c":
+      /* Call the method from the server to get the overall average */
       err = conn.Call(rpclab.MAVG_ALL, &dummy, &avg)
       if err != nil {
         fmt.Println(rpclab.MAVG_ALL, err)
@@ -76,7 +77,33 @@ func main() {
 
     case "d":
       // TODO: Promedio por materia
-      fmt.Println("TODO: Promedio por materia")
+      /* Get the slice of subjects */
+      list := &rpclab.SubjectsList{}
+      err = conn.Call(rpclab.MGET_SUBS, dummy, &list)
+      if err != nil {
+        fmt.Println(rpclab.MGET_SUBS, err)
+        continue
+      }
+
+      /* Display all the subjects */
+      for i,s := range list.Value {
+        fmt.Println(i, ":", s)
+      }
+      fmt.Print("Escoja el numero de la materia: ")
+      fmt.Scanf("%d", &id)
+
+      if id < 0 || id >= len(list.Value) {
+        fmt.Println("Numero de materia invalido")
+        continue
+      }
+
+      /* Get the average from the choosen subject */
+      err = conn.Call(rpclab.MAVG_SUB, list.Value[id], &avg)
+      if err != nil {
+        fmt.Println(rpclab.MAVG_SUB, err)
+        continue
+      }
+      fmt.Printf("El promedio de la materia %s es %.2f\n", list.Value[id], avg)
 
     case "x":
       fmt.Println("Terminando el programa")

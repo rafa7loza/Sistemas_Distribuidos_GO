@@ -11,6 +11,7 @@ const (
   MAVG_ALL = "Server.GetAvgAll"
   MAVG_SUB = "Server.GetAvgSub"
   MGET_NAMES = "Server.GetStudents"
+  MGET_SUBS = "Server.GetSubjects"
 )
 
 type Server struct {
@@ -69,6 +70,25 @@ func (s * Server) GetAvgAll(arg1 * int, avg * float64) error {
   return nil
 }
 
+func (s * Server) GetAvgSub(subject string, avg * float64) error {
+  *avg = 0.0
+  var n int
+
+  for _,student := range s.students {
+    grade,ok := student.subjects[subject]
+    if !ok { continue }
+    *avg += grade
+    n++
+  }
+
+  if n == 0 {
+    return errors.New("This subject is not stored")
+  }
+
+  *avg /= float64(n)
+  return nil
+}
+
 func (s * Server) GetStudents(arg1 * int, names * NamesList) error {
   names.Value = make(map[int]string, 0)
   for k,v := range s.students {
@@ -76,6 +96,19 @@ func (s * Server) GetStudents(arg1 * int, names * NamesList) error {
       continue
     }
     names.Value[v.Id] = k
+  }
+  return nil
+}
+
+func (s * Server) GetSubjects(arg1 int, subjects * SubjectsList) error {
+  subjects.Value = make([]string, 0)
+  tmp := make(map[string]bool)
+  for _,student := range s.students {
+    for sub,_ := range student.subjects {
+      if ok := tmp[sub]; ok { continue }
+      subjects.Value = append(subjects.Value, sub)
+      tmp[sub] = true
+    }
   }
   return nil
 }
