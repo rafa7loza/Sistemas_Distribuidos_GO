@@ -4,6 +4,7 @@ import (
   "log"
   "fmt"
   "labs"
+  "labs/rpclab"
   "net/rpc"
 )
 
@@ -20,6 +21,10 @@ func main() {
     switch opt {
     case "a":
       // TODO: Agregar calificacion
+      grade := readGrade()
+      var tmp int
+      err = conn.Call("Server.AddGrade", grade, &tmp)
+      if err != nil { log.Fatal("Server.AddGrade", err) }
       log.Println("TODO: Agregar calificacion")
 
     case "b":
@@ -42,6 +47,23 @@ func main() {
       log.Println("Opcion incorrecta")
     }
   }
+}
+
+func readGrade() * rpclab.Grade {
+  var grade float64
+
+  fmt.Print("Ingrese el nombre del alumno: ")
+  name, err := labs.ReadLine()
+  if err != nil { log.Fatal("Read input:", err) }
+
+  fmt.Print("Ingrese el nombre de la materia: ")
+  sub, err := labs.ReadLine()
+  if err != nil { log.Fatal("Read input:", err) }
+
+  fmt.Print("Ingrese la calificacion: ")
+  fmt.Scanf("%f", &grade)
+
+  return rpclab.NewGrade(name, sub, grade)
 }
 
 func menu() {

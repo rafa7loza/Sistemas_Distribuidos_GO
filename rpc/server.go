@@ -10,7 +10,9 @@ import (
 )
 
 func server() {
-  rpc.Register(new(rpclab.Server))
+  srvr := rpclab.NewServer()
+  rpc.Register(srvr)
+
 
   ln, err := net.Listen("tcp", ":"+labs.PORT)
   if err != nil { log.Fatal(err) }
