@@ -2,6 +2,15 @@ package rpclab
 
 import (
   "log"
+  "errors"
+)
+
+const (
+  MADD_ONE = "Server.AddGrade"
+  MAVG_ONE = "Server.GetAvgOne"
+  MAVG_ALL = "Server.GetAvgAll"
+  MAVG_SUB = "Server.GetAvgSub"
+  MGET_NAMES = "Server.GetStudents"
 )
 
 type Server struct {
@@ -25,14 +34,33 @@ func (s * Server) hasStudent(name string) bool {
   _, ok := s.students[name]
   return ok
 }
-
-
 /* RPC methods */
 func (s * Server) AddGrade(grade *Grade, reply * int) error {
-
-  log.Println("Calling the method AddGrade")
   s.addStudent(grade.NameStudent)
+  student, _ := s.students[grade.NameStudent]
+  return student.AddGrade(grade.Subject, grade.Grade)
+}
+
+func (s * Server) GetAvgOne(name string, avg * float64) error {
   log.Println(s)
 
+  if !s.hasStudent(name) { return errors.New("Student is not stored") }
+
+  *avg = 0.0
+  for _,v := range s.students[name].subjects {
+    *avg += v
+  }
+  *avg /= float64(len(s.students[name].subjects))
+  return nil
+}
+
+func (s * Server) GetStudents(reply * int, names * NamesList) error {
+  names.Value = make(map[int]string, 0)
+  for k,v := range s.students {
+    if _, ok := names.Value[v.Id]; ok {
+      continue
+    }
+    names.Value[v.Id] = k
+  }
   return nil
 }
