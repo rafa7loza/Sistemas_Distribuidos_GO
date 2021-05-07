@@ -57,16 +57,18 @@ func (s * Server) GetAvgOne(name string, avg * float64) error {
 
 func (s * Server) GetAvgAll(arg1 * int, avg * float64) error {
   *avg = 0.0
-  var n int
+  var individualAvg float64
 
   for _,student := range s.students {
-    n += len(student.subjects)
+    individualAvg = 0.0
     for _,v := range student.subjects {
-      *avg += v
+      individualAvg += v
     }
+    individualAvg /= float64(len(student.subjects))
+    *avg += individualAvg
   }
 
-  *avg /= float64(n)
+  *avg /= float64(len(s.students))
   return nil
 }
 
