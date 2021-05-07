@@ -205,6 +205,7 @@ func (c * Client) GetFiles() ([]string, error) {
   if err != nil { return nil, err }
 
   for _, file := range files {
+    if c.username + ".msg" == file.Name() { continue }
     ret = append(ret, file.Name())
   }
 
