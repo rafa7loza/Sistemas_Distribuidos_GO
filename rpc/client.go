@@ -10,7 +10,7 @@ import (
 
 func main() {
   var avg float64
-  var name, opt string
+  var opt string
   var dummy, id int
   opt = ""
 
@@ -26,14 +26,20 @@ func main() {
     case "a":
       grade := readGrade()
       err = conn.Call(rpclab.MADD_ONE, grade, &dummy)
-      if err != nil { log.Println(rpclab.MADD_ONE, " ", err) }
+      if err != nil {
+        log.Println(rpclab.MADD_ONE, err)
+        continue
+      }
       fmt.Println("Calificacion agregada exitosamente!\n")
 
     case "b":
       /* Get the map of students */
       names := &rpclab.NamesList{}
-      conn.Call(rpclab.MGET_NAMES, &dummy, names)
-      err = conn.Call(rpclab.MGET_NAMES, name, &avg)
+      err = conn.Call(rpclab.MGET_NAMES, &dummy, names)
+      if err != nil {
+        fmt.Println(rpclab.MGET_NAMES, err)
+        continue
+      }
 
       /* Display the list of names */
       for k,v := range names.Value {
@@ -50,25 +56,34 @@ func main() {
 
       /* Call the avg method */
       err = conn.Call(rpclab.MAVG_ONE, val, &avg)
-      if err != nil { log.Println(rpclab.MAVG_ONE, " ", err) }
+      if err != nil {
+        fmt.Println(rpclab.MAVG_ONE, err)
+        continue
+      }
 
       /* Show the average */
-      fmt.Printf("El promedio de %s es %.2f\n\n", val, avg)
+      fmt.Printf("El promedio de %s es %.2f\n", val, avg)
 
     case "c":
-      // TODO: Promedio de todos los alumnos
-      log.Println("TODO: Promedio de todos los alumnos")
+      err = conn.Call(rpclab.MAVG_ALL, &dummy, &avg)
+      if err != nil {
+        fmt.Println(rpclab.MAVG_ALL, err)
+        continue
+      }
+
+      /* Show the average */
+      fmt.Printf("El promedio de todos los alumnos es %.2f\n", avg)
 
     case "d":
       // TODO: Promedio por materia
-      log.Println("TODO: Promedio por materia")
+      fmt.Println("TODO: Promedio por materia")
 
     case "x":
-      log.Println("Terminando el programa")
+      fmt.Println("Terminando el programa")
       break
 
     default:
-      log.Println("Opcion incorrecta")
+      fmt.Println("Opcion incorrecta")
     }
   }
 }
@@ -91,7 +106,7 @@ func readGrade() * rpclab.Grade {
 }
 
 func menu() {
-  fmt.Println("a) Agregar la calificación de un alumno por materia.")
+  fmt.Println("\na) Agregar la calificación de un alumno por materia.")
   fmt.Println("b) Obtener el promedio del alumno.")
   fmt.Println("c) Obtener el promedio de todos los alumnos.")
   fmt.Println("d) Obtener el promedio por materia.")

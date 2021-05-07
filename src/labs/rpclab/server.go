@@ -54,7 +54,22 @@ func (s * Server) GetAvgOne(name string, avg * float64) error {
   return nil
 }
 
-func (s * Server) GetStudents(reply * int, names * NamesList) error {
+func (s * Server) GetAvgAll(arg1 * int, avg * float64) error {
+  *avg = 0.0
+  var n int
+
+  for _,student := range s.students {
+    n += len(student.subjects)
+    for _,v := range student.subjects {
+      *avg += v
+    }
+  }
+
+  *avg /= float64(n)
+  return nil
+}
+
+func (s * Server) GetStudents(arg1 * int, names * NamesList) error {
   names.Value = make(map[int]string, 0)
   for k,v := range s.students {
     if _, ok := names.Value[v.Id]; ok {
