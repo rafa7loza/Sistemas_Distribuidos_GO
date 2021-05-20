@@ -12,7 +12,7 @@
         <p>Agregar la calificación de un alumno por materia.</p>
         <div>
           <label for="studentNameCheckbox">El alumno existe</label>
-          <input type="checkbox" name="studenExists" value="name" id="studentNameCheckbox" onclick="handleNameInput()">
+          <input type="checkbox" name="studentExists" value="1" id="studentNameCheckbox" onclick="handleNameInput()">
         </div>
         <div id="textInput">
           <label for="studentNameText">Ingrese el nombre del alumno: </label>
@@ -20,10 +20,18 @@
         </div>
         <div id="selectInput" hidden>
           <label for="studentNameSelect">Seleccione el nombre del alumno: </label>
-          <select name="names" id="studentNameSelect">
+          <select name="names" value="" id="studentNameSelect">
             <option value="Juan">Juan</option>
             <option value="Daniela">Daniela</option>
           </select>
+        </div>
+        <div>
+          <label for="studentSubject">Ingrese el nombre de la materia: </label>
+          <input type="text" name="studentSubject" id="studentSubject">
+        </div>
+        <div>
+          <label for="studentGrade">Ingrese el promedio: </label>
+          <input type="text" name="studentGrade" id="studentGrade">
         </div>
         <button type="submit" name="button">Calcular</button>
       </form>

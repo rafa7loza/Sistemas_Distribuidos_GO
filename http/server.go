@@ -4,8 +4,12 @@ import (
   "log"
   "net/http"
   "labs"
+  "labs/http"
   "fmt"
+  "strconv"
 )
+
+var students * httplab.Data
 
 func root(res http.ResponseWriter, req *http.Request) {
   res.Header().Set(
@@ -39,19 +43,44 @@ func getScript(res http.ResponseWriter, req *http.Request) {
 }
 
 func calificacion(res http.ResponseWriter, req *http.Request) {
-  log.Println(req.Method)
-  // switch req.Method {
-	// case "POST":
-	// 	if err := req.ParseForm(); err != nil {
-	// 		fmt.Fprintf(res, "ParseForm() error %v", err)
-	// 		return
-	// 	}
-  //
-	// 	log.Println(req.PostForm)
-	// }
+  switch req.Method {
+	case "POST":
+		if err := req.ParseForm(); err != nil {
+			fmt.Fprintf(res, "ParseForm() error %v", err)
+			return
+		}
+
+		log.Println(req.PostForm)
+    var name, subject string
+    var fgrade float64
+
+    if _,ok := req.PostForm["studentExists"]; !ok {
+      log.Println("Add student to the list")
+      name = req.FormValue("studentName")
+    } else {
+      log.Println("Student already added")
+      name = req.FormValue("names")
+    }
+
+    subject = req.FormValue("studentSubject")
+    fgrade, err := strconv.ParseFloat(req.FormValue("studentGrade"), 64)
+    if err != nil {
+      log.Println("Error converting grade input to float64")
+      return
+    }
+
+
+    students.AddGrade(httplab.NewGrade(
+      name,
+      subject,
+      fgrade))
+
+    log.Println(students)
+	}
 }
 
 func main() {
+  students = httplab.NewData()
   handler := http.NewServeMux()
   handler.HandleFunc("/", root)
   handler.HandleFunc("/calificacion", calificacion)
