@@ -1,7 +1,6 @@
 package rpclab
 
 import (
-  "log"
   "errors"
 )
 
@@ -43,8 +42,6 @@ func (s * Server) AddGrade(grade *Grade, reply * int) error {
 }
 
 func (s * Server) GetAvgOne(name string, avg * float64) error {
-  log.Println(s)
-
   if !s.hasStudent(name) { return errors.New("Student is not stored") }
 
   *avg = 0.0
