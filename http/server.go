@@ -93,7 +93,7 @@ func getStudents(res http.ResponseWriter, req *http.Request) {
   }
 }
 
-func calificacion(res http.ResponseWriter, req *http.Request) {
+func addGrade(res http.ResponseWriter, req *http.Request) {
   switch req.Method {
 	case "POST":
 		if err := req.ParseForm(); err != nil {
@@ -127,32 +127,60 @@ func calificacion(res http.ResponseWriter, req *http.Request) {
       subject,
       fgrade))
 
-    htmlContent, err := labs.ReadFileContent("response.html")
+    /* Render the action performed */
+    msg := fmt.Sprintf("Se ha agregado el alumno %s correctamente\n", name)
+    renderHTMLResponse(res, msg)
+	}
+}
+
+func studentAvg(res http.ResponseWriter, req *http.Request) {
+  switch req.Method {
+  case "POST":
+    if err := req.ParseForm(); err != nil {
+			fmt.Fprintf(res, "ParseForm() error %v", err)
+			return
+		}
+
+		log.Println(req.PostForm)
+    name := req.FormValue("names")
+    avg, err := students.GetAvgOne(name)
     if err != nil {
       log.Println(err)
       return
     }
 
-    msg := fmt.Sprintf("Se ha agregado el alumno %s correctamente\n", name)
+    msg := fmt.Sprintf("El promedio de %s es %.2f", name, avg)
+    renderHTMLResponse(res, msg)
+  }
+}
 
-    res.Header().Set(
-			"Content-Type",
-			"text/html",
-		)
+func renderHTMLResponse(res http.ResponseWriter, msg string) {
+  htmlContent, err := labs.ReadFileContent("response.html")
+  if err != nil {
+    log.Println(err)
+    return
+  }
 
-		fmt.Fprintf(
-			res,
-			htmlContent,
-			msg,
-		)
-	}
+  res.Header().Set(
+    "Content-Type",
+    "text/html",
+  )
+
+  fmt.Fprintf(
+    res,
+    htmlContent,
+    msg,
+  )
 }
 
 func main() {
   students = httplab.NewDataStudents()
   handler := http.NewServeMux()
   handler.HandleFunc("/", root)
-  handler.HandleFunc("/calificacion", calificacion)
+  handler.HandleFunc("/calificacion", addGrade)
+  handler.HandleFunc("/promedio_alumno", studentAvg)
+  // handler.HandleFunc("/promedio_todos", calificacion)
+  // handler.HandleFunc("/promedio_materia", calificacion)
   handler.HandleFunc("/js/util.js", getScript)
   handler.HandleFunc("/data/subjects.json", getSubjects)
   handler.HandleFunc("/data/students.json", getStudents)

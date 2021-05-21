@@ -30,7 +30,6 @@ function loadData(name, elementId) {
   var option;
   result = JSON.parse(xmlhttp.responseText);
   result[name].forEach((subject) => {
-    console.log(subject);
     option = document.createElement("option");
     option.text = subject;
     elem.add(option)

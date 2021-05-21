@@ -33,15 +33,15 @@ func (data * DataStudents) AddGrade(grade *Grade) error {
   return student.AddGrade(grade.Subject, grade.Grade)
 }
 
-func (data * DataStudents) GetAvgOne(name string, avg * float64) error {
-  if !data.hasStudent(name) { return errors.New("Student is not stored") }
+func (data * DataStudents) GetAvgOne(name string) (float64, error) {
+  if !data.hasStudent(name) { return 0.0, errors.New("Student is not stored") }
 
-  *avg = 0.0
+  avg := 0.0
   for _,v := range data.students[name].subjects {
-    *avg += v
+    avg += v
   }
-  *avg /= float64(len(data.students[name].subjects))
-  return nil
+  avg /= float64(len(data.students[name].subjects))
+  return avg, nil
 }
 
 func (data * DataStudents) GetSubjects() []string {
