@@ -141,7 +141,7 @@ func studentAvg(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		log.Println(req.PostForm)
+		log.Println(students)
     name := req.FormValue("names")
     avg, err := students.GetAvgOne(name)
     if err != nil {
@@ -150,6 +150,42 @@ func studentAvg(res http.ResponseWriter, req *http.Request) {
     }
 
     msg := fmt.Sprintf("El promedio de %s es %.2f", name, avg)
+    renderHTMLResponse(res, msg)
+  }
+}
+
+func averageAll(res http.ResponseWriter, req *http.Request) {
+  switch req.Method {
+  case "POST":
+    if err := req.ParseForm(); err != nil {
+			fmt.Fprintf(res, "ParseForm() error %v", err)
+			return
+		}
+
+    log.Println(students)
+    avg := students.GetAvgAll()
+    msg := fmt.Sprintf("El de todos los alumnos es %.2f", avg)
+    renderHTMLResponse(res, msg)
+  }
+}
+
+func subjectAvg(res http.ResponseWriter, req *http.Request) {
+  switch req.Method {
+  case "POST":
+    if err := req.ParseForm(); err != nil {
+			fmt.Fprintf(res, "ParseForm() error %v", err)
+			return
+		}
+
+		log.Println(students)
+    subject := req.FormValue("subjects")
+    avg, err := students.GetAvgSub(subject)
+    if err != nil {
+      log.Println(err)
+      return
+    }
+
+    msg := fmt.Sprintf("El promedio de la materia %s es %.2f", subject, avg)
     renderHTMLResponse(res, msg)
   }
 }
@@ -179,8 +215,8 @@ func main() {
   handler.HandleFunc("/", root)
   handler.HandleFunc("/calificacion", addGrade)
   handler.HandleFunc("/promedio_alumno", studentAvg)
-  // handler.HandleFunc("/promedio_todos", calificacion)
-  // handler.HandleFunc("/promedio_materia", calificacion)
+  handler.HandleFunc("/promedio_todos", averageAll)
+  handler.HandleFunc("/promedio_materia", subjectAvg)
   handler.HandleFunc("/js/util.js", getScript)
   handler.HandleFunc("/data/subjects.json", getSubjects)
   handler.HandleFunc("/data/students.json", getStudents)

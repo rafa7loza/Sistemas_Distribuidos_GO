@@ -44,6 +44,42 @@ func (data * DataStudents) GetAvgOne(name string) (float64, error) {
   return avg, nil
 }
 
+func (data * DataStudents) GetAvgAll() float64 {
+  avg := 0.0
+  var individualAvg float64
+
+  for _,student := range data.students {
+    individualAvg = 0.0
+    for _,v := range student.subjects {
+      individualAvg += v
+    }
+    individualAvg /= float64(len(student.subjects))
+    avg += individualAvg
+  }
+
+  avg /= float64(len(data.students))
+  return avg
+}
+
+func (data * DataStudents) GetAvgSub(subject string) (float64, error) {
+  avg := 0.0
+  var n int
+
+  for _,student := range data.students {
+    grade,ok := student.subjects[subject]
+    if !ok { continue }
+    avg += grade
+    n++
+  }
+
+  if n == 0 {
+    return 0.0, errors.New("This subject is not stored")
+  }
+
+  avg /= float64(n)
+  return avg, nil
+}
+
 func (data * DataStudents) GetSubjects() []string {
   arr := make([]string,0)
   tmp := make(map[string]bool)
