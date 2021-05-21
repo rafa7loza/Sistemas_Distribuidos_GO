@@ -126,6 +126,25 @@ func calificacion(res http.ResponseWriter, req *http.Request) {
       name,
       subject,
       fgrade))
+
+    htmlContent, err := labs.ReadFileContent("response.html")
+    if err != nil {
+      log.Println(err)
+      return
+    }
+
+    msg := fmt.Sprintf("Se ha agregado el alumno %s correctamente\n", name)
+
+    res.Header().Set(
+			"Content-Type",
+			"text/html",
+		)
+
+		fmt.Fprintf(
+			res,
+			htmlContent,
+			msg,
+		)
 	}
 }
 
