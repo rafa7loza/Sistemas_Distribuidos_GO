@@ -8,7 +8,7 @@
   <body onload="fetch()">
     <div class="parentContainer">
       <form action="/calificacion" method="POST">
-        <h1>Opcion 1</h1>
+        <h3>Opcion 1</h3>
         <p>Agregar la calificación de un alumno por materia.</p>
         <div>
           <label for="studentNameCheckbox">El alumno existe</label>
@@ -30,17 +30,31 @@
           <label for="studentGrade">Ingrese el promedio: </label>
           <input type="text" name="studentGrade" id="studentGrade">
         </div>
-        <button type="submit" name="button">Calcular</button>
+        <button type="submit" name="addStudentBtn">Agregar</button>
       </form>
-      <h1>Opcion 2</h1>
-      <p>Obtener promedio de un alumno.</p>
-      <button type="button" name="button">Calcular</button>
-      <h1>Opcion 3</h1>
-      <p>Obtener promedio de todos los alumnos.</p>
-      <button type="button" name="button">Calcular</button>
-      <h1>Opcion 4</h1>
-      <p>Obtener el promedio por materiaz.</p>
-      <button type="button" name="button">Calcular</button>
+      <form action="/promedio_alumno" method="post">
+        <h3>Opcion 2</h3>
+        <p>Obtener promedio de un alumno.</p>
+        <div>
+          <label for="studentAvgSelect">Seleccione un alumno: </label>
+          <select name="names" value="" id="studentAvgSelect"></select>
+        </div>
+        <button type="submit" name="avgStudentBtn">Obtener</button>
+      </form>
+      <form action="/promedio_todos" method="post">
+        <h3>Opcion 3</h3>
+        <p>Promedio de todos los alumnos.</p>
+        <button type="submit" name="avgAllBtn">Obtener</button>
+      </form>
+      <form action="/promedio_materia" method="post">
+        <h3>Opcion 4</h3>
+        <p>Obtener el promedio por materias.</p>
+        <div>
+          <label for="subjectAvgSelect">Seleccione una materia: </label>
+          <select name="subjects" value="" id="subjectAvgSelect"></select>
+        </div>
+        <button type="submit" name="avgSubjectBtn">Calcular</button>
+      </form>
     </div>
   </body>
 </html>

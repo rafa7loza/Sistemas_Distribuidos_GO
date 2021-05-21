@@ -1,6 +1,8 @@
 function fetch() {
   handleNameInput()
   loadData("students", "studentNameSelect")
+  loadData("students", "studentAvgSelect")
+  loadData("subjects", "subjectAvgSelect")
 }
 
 function handleNameInput() {
