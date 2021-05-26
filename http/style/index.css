@@ -1,0 +1,27 @@
+.parentContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.parentContainer > form {
+  margin: 20px;
+  border-style: solid;
+  flex-basis: 42%%;
+}
+
+.columnContainer {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.columnContainer > button {
+  width: 120px;
+  height: 30px;
+  align-self: center;
+  margin-top: 10px;
+}

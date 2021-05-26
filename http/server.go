@@ -43,6 +43,21 @@ func getScript(res http.ResponseWriter, req *http.Request) {
 	)
 }
 
+func getStyle(res http.ResponseWriter, req *http.Request) {
+  res.Header().Set(
+    "Content-Type",
+    "text/css",
+  )
+
+  content, err := labs.ReadFileContent("style/index.css")
+  if err != nil { log.Fatal("Read the file content") }
+
+  fmt.Fprintf(
+    res,
+    content,
+  )
+}
+
 func getSubjects(res http.ResponseWriter, req *http.Request) {
   switch req.Method {
 	case "GET":
@@ -218,6 +233,7 @@ func main() {
   handler.HandleFunc("/promedio_todos", averageAll)
   handler.HandleFunc("/promedio_materia", subjectAvg)
   handler.HandleFunc("/js/util.js", getScript)
+  handler.HandleFunc("/style/index.css", getStyle)
   handler.HandleFunc("/data/subjects.json", getSubjects)
   handler.HandleFunc("/data/students.json", getStudents)
 
