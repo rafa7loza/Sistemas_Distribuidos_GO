@@ -2,58 +2,67 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/style/index.css">
     <script type="text/javascript" src="js/util.js"></script>
     <title>Actividad 6 - Servidor HTTP </title>
   </head>
   <body onload="fetch()">
     <div class="parentContainer">
       <form action="/calificacion" method="POST">
-        <h3>Opcion 1</h3>
-        <p>Agregar la calificación de un alumno por materia.</p>
-        <div>
-          <label for="studentNameCheckbox">El alumno existe</label>
-          <input type="checkbox" name="studentExists" value="1" id="studentNameCheckbox" onclick="handleNameInput()">
+        <div class="columnContainer">
+          <h3>Opcion 1</h3>
+          <p>Agregar la calificación de un alumno por materia.</p>
+          <div>
+            <label for="studentNameCheckbox">El alumno existe</label>
+            <input type="checkbox" name="studentExists" value="1" id="studentNameCheckbox" onclick="handleNameInput()">
+          </div>
+          <div id="textInput">
+            <label for="studentNameText">Ingrese el nombre del alumno: </label>
+            <input type="text" name="studentName" id="studentNameText">
+          </div>
+          <div id="selectInput" hidden>
+            <label for="studentNameSelect">Seleccione el nombre del alumno: </label>
+            <select name="names" value="" id="studentNameSelect"></select>
+          </div>
+          <div>
+            <label for="studentSubject">Ingrese el nombre de la materia: </label>
+            <input type="text" name="studentSubject" id="studentSubject">
+          </div>
+          <div>
+            <label for="studentGrade">Ingrese el promedio: </label>
+            <input type="text" name="studentGrade" id="studentGrade">
+          </div>
+          <button type="submit" name="addStudentBtn">Agregar</button>
         </div>
-        <div id="textInput">
-          <label for="studentNameText">Ingrese el nombre del alumno: </label>
-          <input type="text" name="studentName" id="studentNameText">
-        </div>
-        <div id="selectInput" hidden>
-          <label for="studentNameSelect">Seleccione el nombre del alumno: </label>
-          <select name="names" value="" id="studentNameSelect"></select>
-        </div>
-        <div>
-          <label for="studentSubject">Ingrese el nombre de la materia: </label>
-          <input type="text" name="studentSubject" id="studentSubject">
-        </div>
-        <div>
-          <label for="studentGrade">Ingrese el promedio: </label>
-          <input type="text" name="studentGrade" id="studentGrade">
-        </div>
-        <button type="submit" name="addStudentBtn">Agregar</button>
       </form>
       <form action="/promedio_alumno" method="post">
-        <h3>Opcion 2</h3>
-        <p>Obtener promedio de un alumno.</p>
-        <div>
-          <label for="studentAvgSelect">Seleccione un alumno: </label>
-          <select name="names" value="" id="studentAvgSelect"></select>
+        <div class="columnContainer">
+          <h3>Opcion 2</h3>
+          <p>Obtener promedio de un alumno.</p>
+          <div>
+            <label for="studentAvgSelect">Seleccione un alumno: </label>
+            <select name="names" value="" id="studentAvgSelect"></select>
+          </div>
+          <button type="submit" name="avgStudentBtn">Obtener</button>
         </div>
-        <button type="submit" name="avgStudentBtn">Obtener</button>
       </form>
       <form action="/promedio_todos" method="post">
-        <h3>Opcion 3</h3>
-        <p>Promedio de todos los alumnos.</p>
-        <button type="submit" name="avgAllBtn">Obtener</button>
+        <div class="columnContainer">
+          <h3>Opcion 3</h3>
+          <p>Promedio de todos los alumnos.</p>
+          <button type="submit" name="avgAllBtn">Obtener</button>
+        </div>
       </form>
       <form action="/promedio_materia" method="post">
-        <h3>Opcion 4</h3>
-        <p>Obtener el promedio por materias.</p>
-        <div>
-          <label for="subjectAvgSelect">Seleccione una materia: </label>
-          <select name="subjects" value="" id="subjectAvgSelect"></select>
+        <div class="columnContainer">
+          <h3>Opcion 4</h3>
+          <p>Obtener el promedio por materias.</p>
+          <div>
+            <label for="subjectAvgSelect">Seleccione una materia: </label>
+            <select name="subjects" value="" id="subjectAvgSelect"></select>
+          </div>
+          <button type="submit" name="avgSubjectBtn">Calcular</button>
         </div>
-        <button type="submit" name="avgSubjectBtn">Calcular</button>
       </form>
     </div>
   </body>
