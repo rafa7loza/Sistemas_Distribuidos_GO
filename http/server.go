@@ -5,6 +5,7 @@ import (
   "net/http"
   "labs"
   "labs/http"
+  "labs/data"
   "fmt"
   "strconv"
   "encoding/json"
@@ -137,7 +138,7 @@ func addGrade(res http.ResponseWriter, req *http.Request) {
     }
 
     /* Add a new student to memory */
-    students.AddGrade(httplab.NewGrade(
+    students.AddGrade(data.NewGrade(
       name,
       subject,
       fgrade))

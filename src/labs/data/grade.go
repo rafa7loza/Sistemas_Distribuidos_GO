@@ -1,4 +1,4 @@
-package httplab
+package data
 
 type Grade struct {
   NameStudent string

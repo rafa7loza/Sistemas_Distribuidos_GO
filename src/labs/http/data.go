@@ -2,6 +2,7 @@ package httplab
 
 import (
   "errors"
+  "labs/data"
 )
 
 type DataStudents struct {
@@ -27,7 +28,7 @@ func (data * DataStudents) hasStudent(name string) bool {
 }
 
 /* Public methods */
-func (data * DataStudents) AddGrade(grade *Grade) error {
+func (data * DataStudents) AddGrade(grade *data.Grade) error {
   data.addStudent(grade.NameStudent)
   student, _ := data.students[grade.NameStudent]
   return student.AddGrade(grade.Subject, grade.Grade)

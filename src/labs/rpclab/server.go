@@ -1,6 +1,7 @@
 package rpclab
 
 import (
+  "labs/data"
   "errors"
 )
 
@@ -35,7 +36,7 @@ func (s * Server) hasStudent(name string) bool {
   return ok
 }
 /* RPC methods */
-func (s * Server) AddGrade(grade *Grade, reply * int) error {
+func (s * Server) AddGrade(grade * data.Grade, reply * int) error {
   s.addStudent(grade.NameStudent)
   student, _ := s.students[grade.NameStudent]
   return student.AddGrade(grade.Subject, grade.Grade)
