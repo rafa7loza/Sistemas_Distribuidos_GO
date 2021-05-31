@@ -1,4 +1,4 @@
-package data
+package utils
 
 type Grade struct {
   NameStudent string

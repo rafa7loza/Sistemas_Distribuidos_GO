@@ -1,4 +1,4 @@
-package httplab
+package utils
 
 import (
   "errors"
@@ -6,7 +6,7 @@ import (
 
 type Student struct {
   Id int
-  subjects map[string]float64
+  Subjects map[string]float64
 }
 
 /* Constructor */
@@ -16,7 +16,7 @@ func NewStudent(id int) * Student {
 
 /* Public method */
 func (st * Student) HasGrade(subject string) bool {
-  _, ok := st.subjects[subject]
+  _, ok := st.Subjects[subject]
   return ok
 }
 
@@ -25,6 +25,6 @@ func (st * Student) AddGrade(subject string, grade float64) error {
     return errors.New("Student already has a grade for this subject")
   }
 
-  st.subjects[subject] = grade
+  st.Subjects[subject] = grade
   return nil
 }

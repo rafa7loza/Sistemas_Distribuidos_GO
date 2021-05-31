@@ -5,7 +5,7 @@ import (
   "fmt"
   "labs"
   "labs/rpclab"
-  "labs/data"
+  "labs/utils"
   "net/rpc"
 )
 
@@ -116,7 +116,7 @@ func main() {
   }
 }
 
-func readGrade() * data.Grade {
+func readGrade() * utils.Grade {
   var grade float64
 
   fmt.Print("Ingrese el nombre del alumno: ")
@@ -130,7 +130,7 @@ func readGrade() * data.Grade {
   fmt.Print("Ingrese la calificacion: ")
   fmt.Scanf("%f", &grade)
 
-  return data.NewGrade(name, sub, grade)
+  return utils.NewGrade(name, sub, grade)
 }
 
 func menu() {
