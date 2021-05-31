@@ -1,6 +1,7 @@
 package rpclab
 
 import (
+  "labs/utils"
   "errors"
 )
 
@@ -14,18 +15,18 @@ const (
 )
 
 type Server struct {
-  students map[string]Student
+  students map[string]utils.Student
   cnt int
 }
 
 func NewServer() * Server {
-  return &Server{make(map[string]Student), 0}
+  return &Server{make(map[string]utils.Student), 0}
 }
 
 /* Public methods */
 func (s * Server) addStudent(name string) {
   if s.hasStudent(name) { return }
-  s.students[name] = *NewStudent(s.cnt)
+  s.students[name] = * utils.NewStudent(s.cnt)
   s.cnt++
 }
 
@@ -35,7 +36,7 @@ func (s * Server) hasStudent(name string) bool {
   return ok
 }
 /* RPC methods */
-func (s * Server) AddGrade(grade *Grade, reply * int) error {
+func (s * Server) AddGrade(grade * utils.Grade, reply * int) error {
   s.addStudent(grade.NameStudent)
   student, _ := s.students[grade.NameStudent]
   return student.AddGrade(grade.Subject, grade.Grade)
@@ -45,10 +46,10 @@ func (s * Server) GetAvgOne(name string, avg * float64) error {
   if !s.hasStudent(name) { return errors.New("Student is not stored") }
 
   *avg = 0.0
-  for _,v := range s.students[name].subjects {
+  for _,v := range s.students[name].Subjects {
     *avg += v
   }
-  *avg /= float64(len(s.students[name].subjects))
+  *avg /= float64(len(s.students[name].Subjects))
   return nil
 }
 
@@ -58,10 +59,10 @@ func (s * Server) GetAvgAll(arg1 * int, avg * float64) error {
 
   for _,student := range s.students {
     individualAvg = 0.0
-    for _,v := range student.subjects {
+    for _,v := range student.Subjects {
       individualAvg += v
     }
-    individualAvg /= float64(len(student.subjects))
+    individualAvg /= float64(len(student.Subjects))
     *avg += individualAvg
   }
 
@@ -74,7 +75,7 @@ func (s * Server) GetAvgSub(subject string, avg * float64) error {
   var n int
 
   for _,student := range s.students {
-    grade,ok := student.subjects[subject]
+    grade,ok := student.Subjects[subject]
     if !ok { continue }
     *avg += grade
     n++
@@ -103,7 +104,7 @@ func (s * Server) GetSubjects(arg1 int, subjects * SubjectsList) error {
   subjects.Value = make([]string, 0)
   tmp := make(map[string]bool)
   for _,student := range s.students {
-    for sub,_ := range student.subjects {
+    for sub,_ := range student.Subjects {
       if ok := tmp[sub]; ok { continue }
       subjects.Value = append(subjects.Value, sub)
       tmp[sub] = true
