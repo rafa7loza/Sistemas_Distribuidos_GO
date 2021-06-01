@@ -6,19 +6,19 @@ import (
 )
 
 type DataStudents struct {
-  students map[string]utils.Student
+  students map[string]Student
   cnt int
 }
 
 /* Constructor */
 func NewDataStudents() * DataStudents {
-  return &DataStudents{make(map[string]utils.Student), 0}
+  return &DataStudents{make(map[string]Student), 0}
 }
 
 /* Private methods */
 func (dst * DataStudents) addStudent(name string) {
   if dst.hasStudent(name) { return }
-  dst.students[name] = * utils.NewStudent(dst.cnt)
+  dst.students[name] = * NewStudent(dst.cnt)
   dst.cnt++
 }
 
@@ -28,7 +28,7 @@ func (data * DataStudents) hasStudent(name string) bool {
 }
 
 /* Public methods */
-func (data * DataStudents) AddGrade(grade *utils.Grade) error {
+func (data * DataStudents) AddGrade(grade *Grade) error {
   data.addStudent(grade.NameStudent)
   student, _ := data.students[grade.NameStudent]
   return student.AddGrade(grade.Subject, grade.Grade)
