@@ -127,3 +127,12 @@ func (data * DataStudents) GetStudent(id int64) (*Student, error) {
   student, _ := data.Students[id]
   return &student, nil
 }
+
+func (data * DataStudents) RemoveStudent(id int64) error {
+  _, ok := data.Students[id]
+  if !ok {
+    return errors.New("Usuario que desdea eliminar no existe")
+  }
+  delete(data.Students, id)
+  return nil
+}

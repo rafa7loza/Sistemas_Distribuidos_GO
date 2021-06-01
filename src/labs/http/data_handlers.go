@@ -2,7 +2,6 @@ package httplab
 
 import (
   "errors"
-  "labs/utils"
 )
 
 type DataStudents struct {

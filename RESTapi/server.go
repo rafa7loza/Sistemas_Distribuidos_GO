@@ -2,6 +2,7 @@ package main
 
 import (
   "log"
+  "fmt"
   "encoding/json"
   "errors"
   "net/http"
@@ -16,6 +17,11 @@ var students * utils.DataStudents
 const (
   UnhandledRequest = "Unhandled request."
 )
+
+func formatJSONResponse(msg string) []byte {
+  res := fmt.Sprintf(`{"code": "%s"}`, msg)
+  return []byte(res)
+}
 
 func addGrade(res http.ResponseWriter, req *http.Request) {
   switch req.Method {
@@ -34,7 +40,8 @@ func addGrade(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    setJSONResponse(res, []byte("Ok"))
+    msg := formatJSONResponse("Ok")
+    setJSONResponse(res, msg)
 
   default:
     err := errors.New(UnhandledRequest)
@@ -60,19 +67,19 @@ func getStudents(res http.ResponseWriter, req *http.Request) {
   }
 }
 
-func getStudent(res http.ResponseWriter, req *http.Request) {
+func handleStudent(res http.ResponseWriter, req *http.Request) {
+  _id, err := strconv.ParseUint(
+    strings.TrimPrefix(req.URL.Path, "/GET/"), 10, 64)
+
+  id := int64(_id)
+  if err != nil {
+    http.Error(res, err.Error(), http.StatusInternalServerError)
+    return
+  }
 
   switch req.Method {
   case "GET":
-    id, err := strconv.ParseUint(
-      strings.TrimPrefix(req.URL.Path, "/GET/"), 10, 64)
-
-    if err != nil {
-      http.Error(res, err.Error(), http.StatusInternalServerError)
-      return
-    }
-
-    student, err := students.GetStudent(int64(id))
+    student, err := students.GetStudent(id)
     if err != nil {
       http.Error(res, err.Error(), http.StatusInternalServerError)
       return
@@ -88,25 +95,28 @@ func getStudent(res http.ResponseWriter, req *http.Request) {
 
     setJSONResponse(res, json)
 
-    default:
-      err := errors.New(UnhandledRequest)
-      http.Error(res, err.Error(), http.StatusInternalServerError)
+  case "DELETE":
+    err := students.RemoveStudent(id)
+    var msg []byte
+    if err != nil {
+      msg = formatJSONResponse(err.Error())
+    } else {
+      msg = formatJSONResponse("Ok")
+    }
+
+    setJSONResponse(res, msg)
+
+  default:
+    err := errors.New(UnhandledRequest)
+    http.Error(res, err.Error(), http.StatusInternalServerError)
   }
 }
 
-/*
-func studentsIdHandler(res http.ResponseWriter, req *http.Request) {
-  // TODO
-  log.Println(req)
-}
-*/
-
 func main() {
   students = utils.NewDataStudents()
-  http.HandleFunc("/POST_calificacion", addGrade)
-  http.HandleFunc("/GET_estudiantes", getStudents)
-  http.HandleFunc("/GET/", getStudent)
-  // http.HandleFunc("/estudiantes", studentsIdHandler)
+  http.HandleFunc("/calificacion", addGrade)
+  http.HandleFunc("/estudiantes", getStudents)
+  http.HandleFunc("/estudiante/", handleStudent)
   log.Println("Starting the server...")
   http.ListenAndServe(":" + labs.PORT, nil)
 }
