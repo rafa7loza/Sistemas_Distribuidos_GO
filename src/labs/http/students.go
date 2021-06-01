@@ -1,17 +1,17 @@
-package utils
+package httplab
 
 import (
   "errors"
 )
 
 type Student struct {
-  Name string                   `json:Name`
+  Id int                        `json:Id`
   Subjects map[string]float64   `json:Subjects`
 }
 
 /* Constructor */
-func NewStudent(name string) * Student {
-  return &Student{name, make(map[string]float64) }
+func NewStudent(id int) * Student {
+  return &Student{id, make(map[string]float64) }
 }
 
 /* Public method */
