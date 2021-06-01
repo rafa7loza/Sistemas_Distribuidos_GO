@@ -5,8 +5,8 @@ import (
 )
 
 type Student struct {
-  Id int
-  Subjects map[string]float64
+  Id int                        `json:Id`
+  Subjects map[string]float64   `json:Subjects`
 }
 
 /* Constructor */
