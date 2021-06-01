@@ -33,7 +33,7 @@ func addGrade(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    log.Println(grade, grade.NameStudent, grade.Subject, grade.Grade)
+    log.Println(grade)
     err = students.AddGrade(&grade)
     if err != nil {
       http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -69,7 +69,7 @@ func getStudents(res http.ResponseWriter, req *http.Request) {
 
 func handleStudent(res http.ResponseWriter, req *http.Request) {
   _id, err := strconv.ParseUint(
-    strings.TrimPrefix(req.URL.Path, "/GET/"), 10, 64)
+    strings.TrimPrefix(req.URL.Path, "/estudiante/"), 10, 64)
 
   id := int64(_id)
   if err != nil {
@@ -105,6 +105,26 @@ func handleStudent(res http.ResponseWriter, req *http.Request) {
     }
 
     setJSONResponse(res, msg)
+
+  case "PUT":
+    var grade utils.Grade
+    err := json.NewDecoder(req.Body).Decode(&grade)
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    log.Println(grade)
+    err = students.UpdateSubjectGrade(id, &grade)
+    var msg []byte
+    if err != nil {
+      msg = formatJSONResponse(err.Error())
+    } else {
+      msg = formatJSONResponse("Ok")
+    }
+
+    setJSONResponse(res, msg)
+
 
   default:
     err := errors.New(UnhandledRequest)

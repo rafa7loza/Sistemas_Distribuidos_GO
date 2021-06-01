@@ -136,3 +136,21 @@ func (data * DataStudents) RemoveStudent(id int64) error {
   delete(data.Students, id)
   return nil
 }
+
+func (data * DataStudents) UpdateSubjectGrade(id int64, newGrade * Grade) error {
+  student, ok := data.Students[id]
+  if !ok {
+    return errors.New("No se puede actualizar la calificacion, usuario no encontrado")
+  }
+
+  subject := newGrade.Subject
+  grade := newGrade.Grade
+
+  _, ok = student.Subjects[subject]
+  if !ok {
+    return errors.New("No se puede actualizar la calificacion, materia no encontrada")
+  }
+
+  student.Subjects[subject] = grade
+  return nil
+}
