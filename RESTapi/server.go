@@ -7,6 +7,8 @@ import (
   "net/http"
   "labs"
   "labs/utils"
+  "strings"
+  "strconv"
 )
 
 var students * utils.DataStudents
@@ -58,17 +60,53 @@ func getStudents(res http.ResponseWriter, req *http.Request) {
   }
 }
 
+func getStudent(res http.ResponseWriter, req *http.Request) {
 
+  switch req.Method {
+  case "GET":
+    id, err := strconv.ParseUint(
+      strings.TrimPrefix(req.URL.Path, "/GET/"), 10, 64)
+
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    student, err := students.GetStudent(int64(id))
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    log.Println(student)
+    json, err := json.MarshalIndent(student, "", "  ")
+
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    setJSONResponse(res, json)
+
+    default:
+      err := errors.New(UnhandledRequest)
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+/*
 func studentsIdHandler(res http.ResponseWriter, req *http.Request) {
   // TODO
   log.Println(req)
 }
+*/
 
 func main() {
   students = utils.NewDataStudents()
   http.HandleFunc("/POST_calificacion", addGrade)
   http.HandleFunc("/GET_estudiantes", getStudents)
-  http.HandleFunc("/estudiante/", studentsIdHandler)
+  http.HandleFunc("/GET/", getStudent)
+  // http.HandleFunc("/estudiantes", studentsIdHandler)
   log.Println("Starting the server...")
   http.ListenAndServe(":" + labs.PORT, nil)
 }

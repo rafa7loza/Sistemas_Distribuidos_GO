@@ -5,34 +5,49 @@ import (
 )
 
 type DataStudents struct {
-  Students map[string]Student `json:Students`
-  cnt int                     `json:Cnt`
+  Students map[int64]Student `json:Students`
+  cnt int64                     `json:Cnt`
 }
 
 /* Constructor */
 func NewDataStudents() * DataStudents {
-  return &DataStudents{make(map[string]Student), 0}
+  return &DataStudents{make(map[int64]Student), 0}
 }
 
 /* Private methods */
-func (dst * DataStudents) addStudent(name string) {
-  if dst.hasStudent(name) { return }
-  dst.Students[name] = * NewStudent(dst.cnt)
-  dst.cnt++
+func (dst * DataStudents) addStudent(name string) int64 {
+  ok, id := dst.findStudentId(name)
+  if !ok {
+    id = dst.cnt
+    dst.Students[id] = * NewStudent(name)
+    dst.cnt++
+  }
+  return id
 }
 
-func (data * DataStudents) hasStudent(name string) bool {
-  _, ok := data.Students[name]
+func (data * DataStudents) hasStudent(id int64) bool {
+  _, ok := data.Students[id]
   return ok
 }
+func (data * DataStudents) findStudentId(name string) (bool, int64) {
+  for id,student := range data.Students {
+    if student.Name == name { return true, id }
+  }
+  return false, -1
+}
+
 
 /* Public methods */
 func (data * DataStudents) AddGrade(grade *Grade) error {
-  data.addStudent(grade.NameStudent)
-  student, _ := data.Students[grade.NameStudent]
+  id := data.addStudent(grade.NameStudent)
+  student, _ := data.Students[id]
+  if len(student.Name) == 0 {
+    student.Name = grade.NameStudent
+  }
   return student.AddGrade(grade.Subject, grade.Grade)
 }
 
+/*
 func (data * DataStudents) GetAvgOne(name string) (float64, error) {
   if !data.hasStudent(name) { return 0.0, errors.New("Student is not stored") }
 
@@ -79,6 +94,7 @@ func (data * DataStudents) GetAvgSub(subject string) (float64, error) {
   avg /= float64(n)
   return avg, nil
 }
+*/
 
 func (data * DataStudents) GetSubjects() []string {
   arr := make([]string,0)
@@ -96,9 +112,18 @@ func (data * DataStudents) GetSubjects() []string {
 
 func (data * DataStudents) GetStudents() []string {
   arr := make([]string,0)
-  for name,_ := range data.Students {
-    arr = append(arr, name)
+  for _,student := range data.Students {
+    arr = append(arr, student.Name)
   }
 
   return arr
+}
+
+func (data * DataStudents) GetStudent(id int64) (*Student, error) {
+  if !data.hasStudent(id) {
+    return nil, errors.New("Usuario no encontrado")
+  }
+
+  student, _ := data.Students[id]
+  return &student, nil
 }

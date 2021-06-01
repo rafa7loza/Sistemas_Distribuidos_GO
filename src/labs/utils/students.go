@@ -5,13 +5,13 @@ import (
 )
 
 type Student struct {
-  Id int                        `json:Id`
+  Name string                   `json:Name`
   Subjects map[string]float64   `json:Subjects`
 }
 
 /* Constructor */
-func NewStudent(id int) * Student {
-  return &Student{id, make(map[string]float64) }
+func NewStudent(name string) * Student {
+  return &Student{name, make(map[string]float64) }
 }
 
 /* Public method */
