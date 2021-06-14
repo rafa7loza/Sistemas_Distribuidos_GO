@@ -4,8 +4,11 @@ import (
   "log"
   "net/http"
   "labs"
+  "labs/utils"
   "fmt"
 )
+
+var chatA * utils.Chat
 
 func root(res http.ResponseWriter, req * http.Request) {
   res.Header().Set(
@@ -22,6 +25,21 @@ func root(res http.ResponseWriter, req * http.Request) {
 	)
 }
 
+func getStyle(res http.ResponseWriter, req *http.Request) {
+  res.Header().Set(
+    "Content-Type",
+    "text/css",
+  )
+
+  content, err := labs.ReadFileContent("style/style.css")
+  if err != nil { log.Fatal("Read the file content") }
+
+  fmt.Fprintf(
+    res,
+    content,
+  )
+}
+
 func getChat(res http.ResponseWriter, req * http.Request) {
   switch req.Method {
 	case "POST":
@@ -30,18 +48,17 @@ func getChat(res http.ResponseWriter, req * http.Request) {
 			return
 		}
 
-		log.Println(req.PostForm)
-
     // Get the chat name and the username
     chatName := req.FormValue("chat")
     username := req.FormValue("username")
 
-    log.Println(username, chatName)
     htmlContent, err := labs.ReadFileContent("chat.html")
     if err != nil {
       log.Println(err)
       return
     }
+
+    msg := chatA.GetMessages()
 
     res.Header().Set(
       "Content-Type",
@@ -52,14 +69,19 @@ func getChat(res http.ResponseWriter, req * http.Request) {
       res,
       htmlContent,
       string(chatName + " " + username),
+      msg,
     )
 	}
 }
 
 func main() {
+  chatA = new(utils.Chat)
+
   handler := http.NewServeMux()
   handler.HandleFunc("/", root)
   handler.HandleFunc("/chat", getChat)
+
+  handler.HandleFunc("/style/style.css", getStyle)
 
   log.Println("Starting the server")
   address := ":" + labs.PORT
