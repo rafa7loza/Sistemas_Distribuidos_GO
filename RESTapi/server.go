@@ -33,7 +33,6 @@ func addGrade(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    log.Println(grade)
     err = students.AddGrade(&grade)
     if err != nil {
       http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -85,7 +84,6 @@ func handleStudent(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    log.Println(student)
     json, err := json.MarshalIndent(student, "", "  ")
 
     if err != nil {
@@ -114,7 +112,6 @@ func handleStudent(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    log.Println(grade)
     err = students.UpdateSubjectGrade(id, &grade)
     var msg []byte
     if err != nil {
