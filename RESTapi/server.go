@@ -53,7 +53,6 @@ func getStudents(res http.ResponseWriter, req *http.Request) {
   case "GET":
     json, err := json.MarshalIndent(students, "", "  ")
     if err != nil {
-      log.Println(err.Error())
       http.Error(res, err.Error(), http.StatusInternalServerError)
       return
     }

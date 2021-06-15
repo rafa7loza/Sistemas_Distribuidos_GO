@@ -8,9 +8,18 @@ import (
   "fmt"
   "encoding/json"
   "errors"
+  "strconv"
 )
 
 var chatA * utils.Chat
+
+type Payload struct {
+  Messages  []utils.Message `json:"Messages"`
+}
+
+func NewPayload(content []utils.Message) * Payload {
+  return &Payload{content}
+}
 
 const (
   UnhandledRequest = "Unhandled request."
@@ -81,7 +90,7 @@ func getScriptRequests(res http.ResponseWriter, req *http.Request) {
 	)
 }
 
-func postMessage(res http.ResponseWriter, req *http.Request) {
+func handleMessages(res http.ResponseWriter, req *http.Request) {
   switch req.Method {
   case "POST":
     var msg utils.Message
@@ -99,6 +108,30 @@ func postMessage(res http.ResponseWriter, req *http.Request) {
     log.Println(data)
     setJSONResponse(res, jsonMsg)
 
+  case "GET":
+    if err := req.ParseForm(); err != nil {
+			log.Println(err)
+			return
+		}
+
+    // Get the index from the parameter and parse it to int64
+    strParam := req.FormValue("lastIndex")
+    lastIndex, err := strconv.ParseInt(strParam, 10, 64)
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    response := *NewPayload(chatA.GetFromIndex(lastIndex))
+
+    json, err := json.MarshalIndent(response, "", "  ")
+    if err != nil {
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    setJSONResponse(res, json)
+
   default:
     err := errors.New(UnhandledRequest)
     http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -109,12 +142,12 @@ func getChat(res http.ResponseWriter, req * http.Request) {
   switch req.Method {
 	case "POST":
 		if err := req.ParseForm(); err != nil {
-			fmt.Fprintf(res, "ParseForm() error %v", err)
+			log.Println(err)
 			return
 		}
 
     // Get the chat name and the username
-    // chatName := req.FormValue("chat")
+    chatName := req.FormValue("chat")
     username := req.FormValue("username")
 
     htmlContent, err := labs.ReadFileContent("chat.html")
@@ -122,8 +155,6 @@ func getChat(res http.ResponseWriter, req * http.Request) {
       log.Println(err)
       return
     }
-
-    msg := chatA.GetMessages()
 
     res.Header().Set(
       "Content-Type",
@@ -133,8 +164,8 @@ func getChat(res http.ResponseWriter, req * http.Request) {
     fmt.Fprintf(
       res,
       htmlContent,
+      chatName,
       username,
-      msg,
     )
 	}
 }
@@ -150,7 +181,7 @@ func main() {
   handler.HandleFunc("/js/utils.js", getScriptUtils)
 
   handler.HandleFunc("/chat", getChat)
-  handler.HandleFunc("/API/message", postMessage)
+  handler.HandleFunc("/API/messages", handleMessages)
 
 
   log.Println("Starting the server")

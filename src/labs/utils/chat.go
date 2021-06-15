@@ -41,3 +41,13 @@ func (ch * Chat) GetMessages() []string {
 
   return ret
 }
+
+func (ch * Chat) GetFromIndex(index int64) []Message {
+  var msgs []Message
+
+  for ; index < int64(len(ch.Msgs)); index++ {
+    msgs = append(msgs, ch.Msgs[index])
+  }
+
+  return msgs
+}
