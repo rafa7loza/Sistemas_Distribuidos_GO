@@ -3,14 +3,14 @@
 // Call the GET method of the api to refresh messages every second
 var intervalId = window.setInterval(() => {
   var lastIndex = parseInt(localStorage.getItem("lastIndex"));
+  var chatName = localStorage.getItem("chatName");
 
-  getChats(lastIndex).then((ok) => {
+  getChats(lastIndex, chatName).then((ok) => {
     let payload = JSON.parse(ok);
     if (payload['Messages']) {
       lastIndex += payload['Messages'].length;
 
       payload['Messages'].forEach(item => {
-        console.log(item);
         appendNewMessage(item);
       });
 
@@ -34,10 +34,11 @@ function postMessage() {
   };
 
   console.log(payload);
+  const params = 'chatName=' + localStorage.getItem("chatName");
 
   const myProm = new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/API/messages', true);
+    xhr.open('POST', '/API/messages?'+params, true);
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(xhr.response);
@@ -69,8 +70,8 @@ function postMessage() {
   document.getElementById('message').value = '';
 }
 
-function getChats(lastIndex) {
-  const params = 'lastIndex='+lastIndex;
+function getChats(lastIndex, chatName) {
+  const params = 'lastIndex='+lastIndex + '&chatName=' + chatName;
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();

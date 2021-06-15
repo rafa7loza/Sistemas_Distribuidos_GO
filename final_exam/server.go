@@ -11,7 +11,14 @@ import (
   "strconv"
 )
 
-var chatA * utils.Chat
+const (
+  chatNameA = "Sala para los de INCO"
+  chatNameB = "Sala para los Quimicos"
+  chatNameC = "Sala para los de CUCEA"
+  UnhandledRequest = "Unhandled request."
+)
+
+var chatA, chatB, chatC * utils.Chat
 
 type Payload struct {
   Messages  []utils.Message `json:"Messages"`
@@ -20,10 +27,6 @@ type Payload struct {
 func NewPayload(content []utils.Message) * Payload {
   return &Payload{content}
 }
-
-const (
-  UnhandledRequest = "Unhandled request."
-)
 
 func formatJSONResponse(msg string) []byte {
   res := fmt.Sprintf(`{"code": "%s"}`, msg)
@@ -42,6 +45,12 @@ func root(res http.ResponseWriter, req * http.Request) {
 	fmt.Fprintf(
 		res,
     content,
+    chatNameA,
+    chatNameA,
+    chatNameB,
+    chatNameB,
+    chatNameC,
+    chatNameC,
 	)
 }
 
@@ -101,11 +110,23 @@ func handleMessages(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    chatA.Msgs = append(chatA.Msgs, msg)
+    chatName := req.FormValue("chatName")
+
+    switch chatName {
+    case chatNameA:
+      chatA.Msgs = append(chatA.Msgs, msg)
+    case chatNameB:
+      chatB.Msgs = append(chatB.Msgs, msg)
+    case chatNameC:
+      chatC.Msgs = append(chatC.Msgs, msg)
+    default:
+      err = errors.New("Invalid chat name")
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
     jsonMsg := formatJSONResponse("Ok")
 
-    data := chatA.GetMessages()
-    log.Println(data)
     setJSONResponse(res, jsonMsg)
 
   case "GET":
@@ -116,14 +137,32 @@ func handleMessages(res http.ResponseWriter, req *http.Request) {
 
     // Get the index from the parameter and parse it to int64
     strParam := req.FormValue("lastIndex")
+    chatName := req.FormValue("chatName")
     lastIndex, err := strconv.ParseInt(strParam, 10, 64)
     if err != nil {
       http.Error(res, err.Error(), http.StatusInternalServerError)
       return
     }
 
-    response := *NewPayload(chatA.GetFromIndex(lastIndex))
+    var response * Payload
 
+    switch chatName {
+    case chatNameA:
+      response = NewPayload(chatA.GetFromIndex(lastIndex))
+    case chatNameB:
+      response = NewPayload(chatB.GetFromIndex(lastIndex))
+    case chatNameC:
+      response = NewPayload(chatC.GetFromIndex(lastIndex))
+    default:
+      err = errors.New("Invalid chat name")
+      http.Error(res, err.Error(), http.StatusInternalServerError)
+      return
+    }
+
+    if response == nil {
+      log.Println("Null value");
+      return ;
+    }
     json, err := json.MarshalIndent(response, "", "  ")
     if err != nil {
       http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -172,6 +211,8 @@ func getChat(res http.ResponseWriter, req * http.Request) {
 
 func main() {
   chatA = new(utils.Chat)
+  chatB = new(utils.Chat)
+  chatC = new(utils.Chat)
 
   handler := http.NewServeMux()
   handler.HandleFunc("/", root)

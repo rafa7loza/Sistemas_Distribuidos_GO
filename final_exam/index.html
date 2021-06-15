@@ -9,13 +9,13 @@
     <div>
       <form action="/chat" method="post">
         <p>Escoge la sala a la que deseas unirte</p>
-        <div>
-          <input type="radio" name="chat" value="A" id="chatA" checked>
-          <label for="chatA">Chat A</label>
-          <input type="radio" name="chat" value="chat B" id="chatB">
-          <label for="chatB">Chat B</label>
-          <input type="radio" name="chat" value="chat C" id="chatC">
-          <label for="chatC">Chat C</label>
+        <div id="radioGroup">
+          <input type="radio" name="chat" value="%s" id="chatA" checked>
+          <label for="chatA">%s</label>
+          <input type="radio" name="chat" value="%s" id="chatB">
+          <label for="chatB">%s</label>
+          <input type="radio" name="chat" value="%s" id="chatC">
+          <label for="chatC">%s</label>
         </div>
         <div>
           <label for="username">Ingrese su nombre de usuario: </label>
