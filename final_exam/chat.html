@@ -3,16 +3,22 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/style/style.css">
+    <script type="text/javascript" src="js/api_requests.js"></script>
     <title>Examen final</title>
   </head>
   <body>
     <div>
-      <p>Current user %s</p>
+      <p>Current user: %s</p>
     </div>
 
     <div class="messagesWindow">
       <p>This is the chat!!</p><br>
       <p>%s</p>
+    </div>
+    <div>
+      <label for="message">Escriba un mensaje: </label>
+      <input type="text" name="message" id="message">
+      <button type="button" name="sendMessageBtn" onclick="postMessage()">Enviar</button>
     </div>
   </body>
 </html>

@@ -19,7 +19,7 @@ func NewMessage(user, content string) * Message {
 
 func (msg * Message) ToString() string {
   return fmt.Sprintf(
-    "[%s] %s: %s",
+    "%s %s: %s",
     msg.Date,
     msg.From,
     msg.Content,

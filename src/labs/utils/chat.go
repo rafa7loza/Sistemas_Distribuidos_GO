@@ -9,7 +9,7 @@ type Chat struct {
   Users map[string]bool `json:"Users"`
 }
 
-// Public functions
+// Public methods
 
 /* Add a user to the map, if the user is in the map and his value it's true
  * then return an error */
