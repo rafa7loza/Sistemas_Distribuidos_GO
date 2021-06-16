@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="js/utils.js"></script>
+    <title>Examen final</title>
+  </head>
+  <body>
+    <div>
+      <form action="/chat" method="post">
+        <p>Escoge la sala a la que deseas unirte</p>
+        <div id="radioGroup">
+          <input type="radio" name="chat" value="%s" id="chatA" checked>
+          <label for="chatA">%s</label>
+          <input type="radio" name="chat" value="%s" id="chatB">
+          <label for="chatB">%s</label>
+          <input type="radio" name="chat" value="%s" id="chatC">
+          <label for="chatC">%s</label>
+        </div>
+        <div>
+          <label for="username">Ingrese su nombre de usuario: </label>
+          <input type="text" name="username" id="username">
+        </div>
+        <button type="submit" name="submitBtn" onclick="saveUsername()">Ingresar</button>
+      </form>
+    </div>
+  </body>
+</html>

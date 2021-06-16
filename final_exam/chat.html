@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/style/style.css">
+    <script type="text/javascript" src="js/api_requests.js"></script>
+    <title>Examen final</title>
+  </head>
+  <body>
+    <div>
+      <p>Estas en el chat %s</p><br><p>Eres el usuario '%s'</p>
+    </div>
+
+    <div class="messagesWindow" id="parentWindow">
+      <p>This is the chat window!!</p><br>
+    </div>
+    <div>
+      <label for="message">Escriba un mensaje: </label>
+      <input type="text" name="message" id="message">
+      <button type="button" name="sendMessageBtn" onclick="postMessage()">Enviar</button>
+    </div>
+  </body>
+</html>

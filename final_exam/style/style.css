@@ -1,0 +1,6 @@
+.messagesWindow {
+  width: 50%%;
+  height: 50%%;
+  overflow: auto;
+  background-color: lightblue;
+}
